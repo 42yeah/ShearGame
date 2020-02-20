@@ -2,6 +2,10 @@
 
 in vec4 mvpPos;
 in vec3 pos;
+in vec3 normal;
+in vec2 texCoord;
+
+uniform sampler2D tex;
 
 out vec4 color;
 
@@ -40,5 +44,5 @@ void main() {
     vec2 uv = pos.xz;
     uv *= 20.0;
     vec3 outputColor = mapGreeness(perlin(uv));
-    color = vec4(fog(mvpPos.xyz, outputColor), 1.0);
+    color = vec4(fog(mvpPos.xyz, normal), 1.0);
 }

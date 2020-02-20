@@ -56,6 +56,8 @@ void Game::render() {
     glUniformMatrix4fv(renderProgram.loc("model"), 1, GL_FALSE, glm::value_ptr(glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 100.0f))));
     glBindVertexArray(ground);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    // === RENDER MODELS === //
+    models[0].render(renderProgram);
     renderPass.unuse();
     
     glDisable(GL_DEPTH_TEST);
@@ -98,12 +100,12 @@ void Game::update() {
 GLuint Game::genereateGround() { 
     GLuint VAO, VBO;
     float triangle[] = {
-        -1.0f, 0.0f, -1.0f,
-        1.0f, 0.0f, -1.0f,
-        1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
-        -1.0f, 0.0f, 1.0f,
-        -1.0f, 0.0f, -1.0f
+        -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f
     };
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -111,7 +113,11 @@ GLuint Game::genereateGround() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, nullptr);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void *) (sizeof(float) * 3));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void *) (sizeof(float) * 6));
     return VAO;
 }
 

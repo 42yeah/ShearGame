@@ -7,6 +7,7 @@
 //
 
 #include "Model.hpp"
+#include <glm/gtc/type_ptr.hpp>
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "../Includes/tiny_obj_loader.h"
 
@@ -26,6 +27,13 @@ std::vector<Model> loadModels(std::string path, std::string mtlPath) {
         std::cout << path << " ERR! " << error << std::endl;;
         return models;
     }
+    
+    // Load the central texture first.
+    if (materials.size() < 0) {
+        std::cout << "ERR! No texture." << std::endl;
+        return models;
+    }
+    Texture tex(mtlPath + "/" + materials[0].diffuse_texname);
     
     for (int i = 0; i < shapes.size(); i++) {
         tinyobj::shape_t &shape = shapes[i];
@@ -47,31 +55,37 @@ std::vector<Model> loadModels(std::string path, std::string mtlPath) {
                           )
             };
             vertices.push_back(v);
-            
-            GLuint VAO, VBO;
-            glGenVertexArrays(1, &VAO);
-            glBindVertexArray(VAO);
-            
-            glGenBuffers(1, &VBO);
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices.size() * sizeof(Vertex)), &vertices[0], GL_STATIC_DRAW);
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, nullptr);
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void *) (sizeof(float) * 3));
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void *) (sizeof(float) * 6));
-            
-            Model model(VAO);
-            
         }
+        GLuint VAO, VBO;
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
         
+        glGenBuffers(1, &VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, nullptr);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void *) (sizeof(float) * 3));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void *) (sizeof(float) * 6));
+        
+        Model model(VAO, (int) mesh.indices.size(), tex);
+        models.push_back(model);
     }
     std::cout << "Model " << path << " loading finished. #vertices: " << attribs.vertices.size() << std::endl;
     return models;
 }
 
 
-Model::Model(GLuint vao) : VAO(vao) {
+Model::Model(GLuint vao, int nVertices, Texture texture) : VAO(vao), numVertices(nVertices), texture(texture) {
 
+}
+
+void Model::render(Program &program) {
+    program.use();
+    texture.pass(program.loc("tex"), 0);
+    glUniformMatrix4fv(program.loc("model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0)));
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, numVertices);
 }

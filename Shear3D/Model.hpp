@@ -13,6 +13,8 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include "../Includes/glad/glad.h"
+#include "Texture.hpp"
+#include "Program.hpp"
 
 
 struct Vertex {
@@ -24,10 +26,14 @@ struct Vertex {
 class Model {
 public:
     Model() {}
-    Model(GLuint vao);
+    Model(GLuint vao, int nVertices, Texture texture);
+    
+    void render(Program &program);
+    GLuint VAO;
 
 private:
-    GLuint VAO;
+    Texture texture;
+    int numVertices;
 };
 
 
