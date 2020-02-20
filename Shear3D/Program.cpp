@@ -16,7 +16,7 @@ Program::Program(std::string vPath, std::string fPath) {
     link(vPath, fPath);
 }
 
-void Program::link(std::string vPath, std::string fPath) { 
+void Program::link(std::string vPath, std::string fPath, bool report) {
     vertexPath = vPath;
     fragmentPath = fPath;
     GLuint program = glCreateProgram();
@@ -26,9 +26,12 @@ void Program::link(std::string vPath, std::string fPath) {
     glAttachShader(program, fs);
     glLinkProgram(program);
     char log[512] = { 0 };
-    glGetProgramInfoLog(program, 1, nullptr, log);
+    glGetProgramInfoLog(program, sizeof(log), nullptr, log);
     setLog(0, std::string(log));
     this->program = program;
+    if (report) {
+        this->report();
+    }
 }
 
 GLuint Program::compile(GLuint type, std::string path) { 
@@ -41,7 +44,7 @@ GLuint Program::compile(GLuint type, std::string path) {
     glShaderSource(shader, 1, &raw, nullptr);
     glCompileShader(shader);
     char log[512] = { 0 };
-    glGetShaderInfoLog(shader, 1, nullptr, log);
+    glGetShaderInfoLog(shader, sizeof(log), nullptr, log);
     setLog(type, std::string(log));
     return shader;
 }
@@ -62,15 +65,22 @@ void Program::setLog(GLuint type, std::string log) {
     }
 }
 
-void Program::report() { 
+void Program::report() {
+    bool erred = false;
     if (vertexLog != "") {
         std::cout << vertexPath << ": " << vertexLog << std::endl;
+        erred = true;
     }
     if (fragmentLog != "") {
-        std::cout << fragmentPath << ": " << vertexLog << std::endl;
+        std::cout << fragmentPath << ": " << fragmentLog << std::endl;
+        erred = true;
     }
     if (programLog != "") {
         std::cout << "Program: " << programLog << std::endl;
+        erred = true;
+    }
+    if (!erred) {
+        std::cout << "The linking is success without errors." << std::endl;
     }
 }
 
@@ -90,3 +100,10 @@ GLuint Program::loc(std::string uniformName) {
 void Program::use() { 
     glUseProgram(program);
 }
+
+void Program::reload() {
+    glDeleteProgram(program);
+    link(vertexPath, fragmentPath);
+    locationCache.clear();
+}
+

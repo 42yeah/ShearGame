@@ -1,0 +1,95 @@
+//
+//  Game.cpp
+//  Shear3D
+//
+//  Created by 周昊 on 2020/2/20.
+//  Copyright © 2020 aiofwa. All rights reserved.
+//
+
+#include "Game.hpp"
+#include <iostream>
+#include <GLFW/glfw3.h>
+#include <glm/gtc/type_ptr.hpp>
+#include "tests.hpp"
+
+
+Game::Game(GLFWwindow *window) : nativeWindow(window), reloadKeyPressed(false) {
+    init();
+}
+
+void Game::updateWindowSize() { 
+    int w, h;
+    glfwGetWindowSize(nativeWindow, &w, &h);
+    windowSize = glm::ivec2(w, h);
+#ifdef __APPLE__
+    windowSize *= 2;
+#endif
+    aspect = (float) w / h;
+}
+
+void Game::init() {
+    updateWindowSize();
+    ground = genereateGround();
+    rect = generateTestRect();
+    renderPass = Pass(windowSize);
+    renderProgram = Program("Assets/default.vertex.glsl", "Assets/default.fragment.glsl");
+    postEffectProgram = Program("Assets/posteffect.vertex.glsl", "Assets/posteffect.fragment.glsl");
+    camera = Camera(glm::vec3(0.0f, 1.63f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+}
+
+void Game::clear() { 
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Game::render() {
+    renderPass.use();
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    renderProgram.use();
+    camera.pass(aspect, renderProgram.loc("view"), renderProgram.loc("perspective"));
+    glUniformMatrix4fv(renderProgram.loc("model"), 1, GL_FALSE, glm::value_ptr(glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 100.0f))));
+    glBindVertexArray(ground);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    renderPass.unuse();
+    
+    glDisable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT);
+    postEffectProgram.use();
+    renderPass.pass(postEffectProgram.loc("tex"), 0);
+    glBindVertexArray(rect);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void Game::update() { 
+    updateWindowSize();
+    if (glfwGetKey(nativeWindow, GLFW_KEY_R)) {
+        if (!reloadKeyPressed) {
+            reloadKeyPressed = true;
+            renderProgram.reload();
+            postEffectProgram.reload();
+        }
+    } else {
+        reloadKeyPressed = false;
+    }
+}
+
+GLuint Game::genereateGround() { 
+    GLuint VAO, VBO;
+    float triangle[] = {
+        -1.0f, 0.0f, -1.0f,
+        1.0f, 0.0f, -1.0f,
+        1.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 1.0f,
+        -1.0f, 0.0f, 1.0f,
+        -1.0f, 0.0f, -1.0f
+    };
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
+    return VAO;
+}

@@ -19,9 +19,10 @@ public:
     Program() {}
     Program(std::string vPath, std::string fPath);
     
-    void link(std::string vPath, std::string fPath);
+    void link(std::string vPath, std::string fPath, bool report = true);
     void report();
     void use();
+    void reload();
     
     GLuint loc(std::string uniformName);
 
