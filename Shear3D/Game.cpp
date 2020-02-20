@@ -38,6 +38,7 @@ void Game::init() {
     
     time = glfwGetTime();
     deltaTime = 0.0f;
+    sunDirection = glm::normalize(glm::vec3(-1.0f, -1.0f, 0.0f));
     
     models = loadModels("Assets/Model/shear.obj", "Assets/Model");
 }
@@ -52,6 +53,8 @@ void Game::render() {
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     renderProgram.use();
+    glUniform3f(renderProgram.loc("sun.dir"), sunDirection.x, sunDirection.y, sunDirection.z);
+    glUniform3f(renderProgram.loc("sun.color"), 1.0f, 1.0f, 1.0f);
     camera.pass(aspect, renderProgram.loc("view"), renderProgram.loc("perspective"));
     glUniformMatrix4fv(renderProgram.loc("model"), 1, GL_FALSE, glm::value_ptr(glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 100.0f))));
     glBindVertexArray(ground);

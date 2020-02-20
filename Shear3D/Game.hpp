@@ -47,6 +47,7 @@ private:
     glm::ivec2 windowSize;
     float aspect, deltaTime;
     std::vector<Model> models;
+    glm::vec3 sunDirection;
     
     // === LOW VALUES === //
     double time;
