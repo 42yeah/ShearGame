@@ -12,7 +12,9 @@ vec3 gamma(vec3 i) {
 }
 
 void main() {
-    vec3 texColor = texture(tex, uv).rgb;
+    vec2 u = uv;
+    u = floor(u * 100.0);
+    vec3 texColor = texture(tex, u / 100.0).rgb;
     
-    color = vec4(gamma(texColor), uv);
+    color = vec4(gamma(texColor), 1.0);
 }

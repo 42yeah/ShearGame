@@ -43,6 +43,10 @@ vec3 fog(vec3 pos, vec3 col) {
 void main() {
     vec2 uv = pos.xz;
     uv *= 20.0;
-    vec3 outputColor = mapGreeness(perlin(uv));
-    color = vec4(fog(mvpPos.xyz, normal), 1.0);
+    vec3 grassColor = mapGreeness(perlin(uv));
+    if (texCoord.x == -1.0) {
+        color = vec4(fog(mvpPos.xyz, grassColor), 1.0);
+        return;
+    }
+    color = vec4(fog(mvpPos.xyz, texture(tex, texCoord).rgb), 1.0);
 }

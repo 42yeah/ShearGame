@@ -57,7 +57,7 @@ void Game::render() {
     glBindVertexArray(ground);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     // === RENDER MODELS === //
-    models[0].render(renderProgram);
+    models[2].render(renderProgram);
     renderPass.unuse();
     
     glDisable(GL_DEPTH_TEST);
@@ -100,12 +100,12 @@ void Game::update() {
 GLuint Game::genereateGround() { 
     GLuint VAO, VBO;
     float triangle[] = {
-        -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f
+        -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+        1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+        1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+        1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+        -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+        -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f
     };
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
