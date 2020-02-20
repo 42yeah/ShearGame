@@ -16,6 +16,8 @@
 		F106C0B123FE89B900320ED8 /* Pass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0AF23FE89B900320ED8 /* Pass.cpp */; };
 		F106C0B623FE935800320ED8 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0B423FE935800320ED8 /* Game.cpp */; };
 		F106C0B923FE9D9300320ED8 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0B723FE9D9300320ED8 /* Camera.cpp */; };
+		F106C0BC23FEBD7000320ED8 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0BA23FEBD7000320ED8 /* Model.cpp */; };
+		F106C0C123FEC44200320ED8 /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0BF23FEC44200320ED8 /* Texture.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -62,6 +64,12 @@
 		F106C0B523FE935800320ED8 /* Game.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Game.hpp; sourceTree = "<group>"; };
 		F106C0B723FE9D9300320ED8 /* Camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
 		F106C0B823FE9D9300320ED8 /* Camera.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Camera.hpp; sourceTree = "<group>"; };
+		F106C0BA23FEBD7000320ED8 /* Model.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
+		F106C0BB23FEBD7000320ED8 /* Model.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Model.hpp; sourceTree = "<group>"; };
+		F106C0BD23FEBE2500320ED8 /* tiny_obj_loader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tiny_obj_loader.h; sourceTree = "<group>"; };
+		F106C0BE23FEC17900320ED8 /* Model */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Model; sourceTree = "<group>"; };
+		F106C0BF23FEC44200320ED8 /* Texture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Texture.cpp; sourceTree = "<group>"; };
+		F106C0C023FEC44200320ED8 /* Texture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Texture.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +118,10 @@
 				F106C0B523FE935800320ED8 /* Game.hpp */,
 				F106C0B723FE9D9300320ED8 /* Camera.cpp */,
 				F106C0B823FE9D9300320ED8 /* Camera.hpp */,
+				F106C0BA23FEBD7000320ED8 /* Model.cpp */,
+				F106C0BB23FEBD7000320ED8 /* Model.hpp */,
+				F106C0BF23FEC44200320ED8 /* Texture.cpp */,
+				F106C0C023FEC44200320ED8 /* Texture.hpp */,
 			);
 			path = Shear3D;
 			sourceTree = "<group>";
@@ -125,6 +137,7 @@
 		F106C09F23FE807500320ED8 /* Includes */ = {
 			isa = PBXGroup;
 			children = (
+				F106C0BD23FEBE2500320ED8 /* tiny_obj_loader.h */,
 				F106C0A023FE807500320ED8 /* KHR */,
 				F106C0A223FE807500320ED8 /* glad */,
 			);
@@ -150,6 +163,7 @@
 		F106C0AC23FE860700320ED8 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				F106C0BE23FEC17900320ED8 /* Model */,
 				F106C0AD23FE86A500320ED8 /* default.vertex.glsl */,
 				F106C0AE23FE86BC00320ED8 /* default.fragment.glsl */,
 				F106C0B223FE8F1100320ED8 /* posteffect.vertex.glsl */,
@@ -240,6 +254,8 @@
 				F106C0A923FE822A00320ED8 /* Program.cpp in Sources */,
 				F106C08C23FE7E2000320ED8 /* main.cpp in Sources */,
 				F106C0B923FE9D9300320ED8 /* Camera.cpp in Sources */,
+				F106C0C123FEC44200320ED8 /* Texture.cpp in Sources */,
+				F106C0BC23FEBD7000320ED8 /* Model.cpp in Sources */,
 				F106C09823FE803D00320ED8 /* glad.c in Sources */,
 				F106C0B623FE935800320ED8 /* Game.cpp in Sources */,
 				F106C0A623FE815100320ED8 /* tests.cpp in Sources */,

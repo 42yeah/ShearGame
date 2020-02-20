@@ -15,6 +15,7 @@
 #include "Pass.hpp"
 #include "Program.hpp"
 #include "Camera.hpp"
+#include "Model.hpp"
 
 
 /**
@@ -45,6 +46,7 @@ private:
     // === HIGH VALUES === //
     glm::ivec2 windowSize;
     float aspect, deltaTime;
+    std::vector<Model> models;
     
     // === LOW VALUES === //
     double time;

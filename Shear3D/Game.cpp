@@ -38,6 +38,8 @@ void Game::init() {
     
     time = glfwGetTime();
     deltaTime = 0.0f;
+    
+    models = loadModels("Assets/Model/shear.obj", "Assets/Model");
 }
 
 void Game::clear() {

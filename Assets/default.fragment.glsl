@@ -32,8 +32,8 @@ vec3 mapGreeness(float p) {
 
 vec3 fog(vec3 pos, vec3 col) {
     float far = 50.0;
-    float fogness = pow(min(pos.z, far) / far, 0.24);
-    return (1.0 - fogness) * col;
+    float fogness = pow(min(pos.z, far) / far, 0.5);
+    return mix(col, vec3(0.0, 0.0, 0.0), fogness);
 }
 
 void main() {
