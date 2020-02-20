@@ -14,4 +14,6 @@
 
 GLuint generateTestTriangle();
 
+GLuint generateTestRect();
+
 #endif /* tests_hpp */
