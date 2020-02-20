@@ -27,6 +27,9 @@ public:
     glm::vec3 position;
     glm::vec3 front;
     glm::vec3 up;
+    
+    float pitch;
+    float yaw;
 };
 
 #endif /* Camera_hpp */

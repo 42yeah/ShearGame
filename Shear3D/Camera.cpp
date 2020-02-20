@@ -11,6 +11,8 @@
 
 
 Camera::Camera(glm::vec3 p, glm::vec3 f, glm::vec3 u) : position(p), front(glm::normalize(f)), up(u) {
+    pitch = 0.0f;
+    yaw = 90.0f;
 }
 
 
@@ -18,7 +20,11 @@ glm::mat4 Camera::perspective(float aspect) {
     return glm::perspective(glm::radians(45.0f), aspect, 0.01f, 100.0f);
 }
 
-glm::mat4 Camera::view() { 
+glm::mat4 Camera::view() {
+    front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+    front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+    front.y = sin(glm::radians(pitch));
+    front = glm::normalize(front);
     return glm::lookAt(position, position + front, up);
 }
 

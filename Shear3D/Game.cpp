@@ -13,7 +13,7 @@
 #include "tests.hpp"
 
 
-Game::Game(GLFWwindow *window) : nativeWindow(window), reloadKeyPressed(false) {
+Game::Game(GLFWwindow *window) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true) {
     init();
 }
 
@@ -35,9 +35,12 @@ void Game::init() {
     renderProgram = Program("Assets/default.vertex.glsl", "Assets/default.fragment.glsl");
     postEffectProgram = Program("Assets/posteffect.vertex.glsl", "Assets/posteffect.fragment.glsl");
     camera = Camera(glm::vec3(0.0f, 1.63f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    
+    time = glfwGetTime();
+    deltaTime = 0.0f;
 }
 
-void Game::clear() { 
+void Game::clear() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -63,6 +66,10 @@ void Game::render() {
 
 void Game::update() { 
     updateWindowSize();
+    double now = glfwGetTime();
+    deltaTime = (float) now - time;
+    time = now;
+    
     if (glfwGetKey(nativeWindow, GLFW_KEY_R)) {
         if (!reloadKeyPressed) {
             reloadKeyPressed = true;
@@ -71,6 +78,18 @@ void Game::update() {
         }
     } else {
         reloadKeyPressed = false;
+    }
+    if (glfwGetKey(nativeWindow, GLFW_KEY_W)) {
+        camera.position += camera.front * deltaTime * 4.0f;
+    }
+    if (glfwGetKey(nativeWindow, GLFW_KEY_A)) {
+        camera.position -= glm::cross(camera.front, camera.up) * deltaTime * 4.0f;
+    }
+    if (glfwGetKey(nativeWindow, GLFW_KEY_S)) {
+        camera.position -= camera.front * deltaTime * 4.0f;
+    }
+    if (glfwGetKey(nativeWindow, GLFW_KEY_D)) {
+        camera.position += glm::cross(camera.front, camera.up) * deltaTime * 4.0f;
     }
 }
 
@@ -92,4 +111,19 @@ GLuint Game::genereateGround() {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);
     return VAO;
+}
+
+void Game::mouseEvent(glm::vec2 mousePos) { 
+    if (firstMouse) {
+        prevMousePos = mousePos;
+        firstMouse = false;
+    }
+    glm::vec2 dPos = mousePos - prevMousePos;
+    dPos.y = -dPos.y;
+    prevMousePos = mousePos;
+    float sensivity = 0.1f;
+    dPos *= sensivity;
+    camera.yaw += dPos.x;
+    camera.pitch += dPos.y;
+    camera.pitch = glm::max(glm::min(camera.pitch, 89.9f), -89.9f);
 }

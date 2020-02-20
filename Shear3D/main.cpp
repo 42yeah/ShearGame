@@ -13,6 +13,12 @@
 #include "tests.hpp"
 
 
+Game game;
+
+void cursorCallback(GLFWwindow *window, double x, double y) {
+    game.mouseEvent(glm::vec2(x, y));
+}
+
 int main(int argc, const char * argv[]) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -20,10 +26,12 @@ int main(int argc, const char * argv[]) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     GLFWwindow *window = glfwCreateWindow(800, 600, "Shear 3D", nullptr, nullptr);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, cursorCallback);
     glfwMakeContextCurrent(window);
     gladLoadGL();
 
-    Game game(window);
+    game = Game(window);
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();

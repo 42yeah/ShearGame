@@ -1,5 +1,6 @@
 #version 330 core
 
+in vec4 mvpPos;
 in vec3 pos;
 
 out vec4 color;
@@ -29,8 +30,15 @@ vec3 mapGreeness(float p) {
     return mix(vec3(0.02, 0.1, 0.02), vec3(0.2, 0.3, 0.2), p);
 }
 
+vec3 fog(vec3 pos, vec3 col) {
+    float far = 50.0;
+    float fogness = pow(min(pos.z, far) / far, 0.24);
+    return (1.0 - fogness) * col;
+}
+
 void main() {
     vec2 uv = pos.xz;
     uv *= 20.0;
-    color = vec4(mapGreeness(perlin(uv)), 1.0);
+    vec3 outputColor = mapGreeness(perlin(uv));
+    color = vec4(fog(mvpPos.xyz, outputColor), 1.0);
 }

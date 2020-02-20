@@ -30,22 +30,29 @@ public:
     void clear();
     void update();
     void render();
+    void mouseEvent(glm::vec2 mousePos);
     
 private:
     void updateWindowSize();
     GLuint genereateGround();
 
+    // === PASSES === //
     Program renderProgram;
     Pass renderPass;
     Program postEffectProgram;
     Camera camera;
 
+    // === HIGH VALUES === //
     glm::ivec2 windowSize;
-    float aspect;
+    float aspect, deltaTime;
     
+    // === LOW VALUES === //
+    double time;
     bool reloadKeyPressed;
     GLuint ground, rect;
     GLFWwindow *nativeWindow;
+    glm::vec2 prevMousePos;
+    bool firstMouse;
 };
 
 #endif /* Game_hpp */
