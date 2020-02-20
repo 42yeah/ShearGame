@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		F106C08C23FE7E2000320ED8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C08B23FE7E2000320ED8 /* main.cpp */; };
+		F106C09423FE7E8900320ED8 /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F106C09323FE7E8900320ED8 /* libglfw.3.3.dylib */; };
+		F106C09523FE7E8900320ED8 /* libglfw.3.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = F106C09323FE7E8900320ED8 /* libglfw.3.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		F106C09823FE803D00320ED8 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = F106C09723FE803D00320ED8 /* glad.c */; };
+		F106C0A623FE815100320ED8 /* tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0A423FE815100320ED8 /* tests.cpp */; };
+		F106C0A923FE822A00320ED8 /* Program.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0A723FE822A00320ED8 /* Program.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -20,11 +25,32 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		F106C09623FE7E8900320ED8 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F106C09523FE7E8900320ED8 /* libglfw.3.3.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		F106C08823FE7E2000320ED8 /* Shear3D */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Shear3D; sourceTree = BUILT_PRODUCTS_DIR; };
 		F106C08B23FE7E2000320ED8 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		F106C09323FE7E8900320ED8 /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../usr/local/Cellar/glfw/3.3.2/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
+		F106C09723FE803D00320ED8 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glad.c; sourceTree = "<group>"; };
+		F106C0A123FE807500320ED8 /* khrplatform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = khrplatform.h; sourceTree = "<group>"; };
+		F106C0A323FE807500320ED8 /* glad.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glad.h; sourceTree = "<group>"; };
+		F106C0A423FE815100320ED8 /* tests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests.cpp; sourceTree = "<group>"; };
+		F106C0A523FE815100320ED8 /* tests.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = tests.hpp; sourceTree = "<group>"; };
+		F106C0A723FE822A00320ED8 /* Program.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Program.cpp; sourceTree = "<group>"; };
+		F106C0A823FE822A00320ED8 /* Program.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Program.hpp; sourceTree = "<group>"; };
+		F106C0AD23FE86A500320ED8 /* default.vertex.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = default.vertex.glsl; sourceTree = "<group>"; };
+		F106C0AE23FE86BC00320ED8 /* default.fragment.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = default.fragment.glsl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F106C09423FE7E8900320ED8 /* libglfw.3.3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,8 +68,11 @@
 		F106C07F23FE7E2000320ED8 = {
 			isa = PBXGroup;
 			children = (
+				F106C0AC23FE860700320ED8 /* Assets */,
+				F106C09F23FE807500320ED8 /* Includes */,
 				F106C08A23FE7E2000320ED8 /* Shear3D */,
 				F106C08923FE7E2000320ED8 /* Products */,
+				F106C09223FE7E8900320ED8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -57,9 +87,56 @@
 		F106C08A23FE7E2000320ED8 /* Shear3D */ = {
 			isa = PBXGroup;
 			children = (
+				F106C09723FE803D00320ED8 /* glad.c */,
 				F106C08B23FE7E2000320ED8 /* main.cpp */,
+				F106C0A423FE815100320ED8 /* tests.cpp */,
+				F106C0A523FE815100320ED8 /* tests.hpp */,
+				F106C0A723FE822A00320ED8 /* Program.cpp */,
+				F106C0A823FE822A00320ED8 /* Program.hpp */,
 			);
 			path = Shear3D;
+			sourceTree = "<group>";
+		};
+		F106C09223FE7E8900320ED8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F106C09323FE7E8900320ED8 /* libglfw.3.3.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F106C09F23FE807500320ED8 /* Includes */ = {
+			isa = PBXGroup;
+			children = (
+				F106C0A023FE807500320ED8 /* KHR */,
+				F106C0A223FE807500320ED8 /* glad */,
+			);
+			path = Includes;
+			sourceTree = "<group>";
+		};
+		F106C0A023FE807500320ED8 /* KHR */ = {
+			isa = PBXGroup;
+			children = (
+				F106C0A123FE807500320ED8 /* khrplatform.h */,
+			);
+			path = KHR;
+			sourceTree = "<group>";
+		};
+		F106C0A223FE807500320ED8 /* glad */ = {
+			isa = PBXGroup;
+			children = (
+				F106C0A323FE807500320ED8 /* glad.h */,
+			);
+			path = glad;
+			sourceTree = "<group>";
+		};
+		F106C0AC23FE860700320ED8 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				F106C0AD23FE86A500320ED8 /* default.vertex.glsl */,
+				F106C0AE23FE86BC00320ED8 /* default.fragment.glsl */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -72,6 +149,8 @@
 				F106C08423FE7E2000320ED8 /* Sources */,
 				F106C08523FE7E2000320ED8 /* Frameworks */,
 				F106C08623FE7E2000320ED8 /* CopyFiles */,
+				F106C09623FE7E8900320ED8 /* Embed Libraries */,
+				F106C0AA23FE85E700320ED8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -114,12 +193,35 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		F106C0AA23FE85E700320ED8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ln -sf ${SRCROOT}/Assets ${BUILT_PRODUCTS_DIR}/Assets\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		F106C08423FE7E2000320ED8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F106C0A923FE822A00320ED8 /* Program.cpp in Sources */,
 				F106C08C23FE7E2000320ED8 /* main.cpp in Sources */,
+				F106C09823FE803D00320ED8 /* glad.c in Sources */,
+				F106C0A623FE815100320ED8 /* tests.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +343,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = KL2JALR869;
 				ENABLE_HARDENED_RUNTIME = YES;
+				HEADER_SEARCH_PATHS = /usr/local/Cellar/glfw/3.3.2/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/glfw/3.3.2/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -251,6 +355,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = KL2JALR869;
 				ENABLE_HARDENED_RUNTIME = YES;
+				HEADER_SEARCH_PATHS = /usr/local/Cellar/glfw/3.3.2/include;
+				LIBRARY_SEARCH_PATHS = /usr/local/Cellar/glfw/3.3.2/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
