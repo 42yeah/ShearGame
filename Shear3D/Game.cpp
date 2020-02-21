@@ -87,7 +87,9 @@ void Game::update() {
     
     float s = additiveTime * 0.05f;
     sunDirection = glm::vec3(-cosf(s), -sin(s), 0.0f);
-    sunColor = glm::mix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.9f, 0.9f, 0.99f), sin(s) * 0.5f + 0.5f);
+    sunColor = glm::mix(glm::vec3(0.01f, 0.01f, 0.01f), glm::vec3(0.9f, 0.9f, 0.99f), sin(s) * 0.5f + 0.5f);
+//    sunColor += glm::vec3(1.0f, 0.5f, 0.0f) * glm::max(0.0f, cosf(s));
+//    sunColor = glm::normalize(sunColor);
     
     if (glfwGetKey(nativeWindow, GLFW_KEY_R)) {
         if (!reloadKeyPressed) {
