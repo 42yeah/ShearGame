@@ -245,6 +245,14 @@ void Game::loadMap(std::string path) {
                     addObject(0, glm::vec3(x, 2.0f, z));
                     break;
                     
+                case 'A':
+                case 'B':
+                case 'C':
+                case 'D':
+                    addObject(7, glm::vec3(x, 0.0f, z), glm::radians(90.0f * (line[x] - 'A')));
+                    addObject(0, glm::vec3(x, 4.0f, z));
+                    break;
+                    
                 case '!':
                     addObject(6, glm::vec3(x, 0.0f, z));
                     addObject(8, glm::vec3(x, 0.0f, z));
@@ -266,6 +274,37 @@ void Game::loadMap(std::string path) {
                 case 'l':
                     addObject(10, glm::vec3(x, 0.0f, z), glm::radians(90.0f * (line[x] - 'i')));
                     addObject(2, glm::vec3(x, 0.0f, z));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    break;
+                    
+                case 'I':
+                case 'J':
+                case 'K':
+                case 'L':
+                    addObject(10, glm::vec3(x, 0.0f, z), glm::radians(90.0f * (line[x] - 'I')));
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    addObject(0, glm::vec3(x, 4.0f, z));
+                    break;
+                    
+                case 't':
+                    addObject(11, glm::vec3(x, 0.0f, z));
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    break;
+                    
+                case 'T':
+                    addObject(11, glm::vec3(x, 0.0f, z));
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    addObject(0, glm::vec3(x, 4.0f, z));
+                    break;
+                    
+                case '?':
+                    addObject(12, glm::vec3(x, 0.0f, z));
+                    break;
+                    
+                case '[':
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    addObject(13, glm::vec3(x, 0.0f, z - 0.5f));
                     addObject(0, glm::vec3(x, 2.0f, z));
                     break;
             }
