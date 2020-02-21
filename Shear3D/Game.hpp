@@ -50,9 +50,11 @@ private:
     // === HIGH VALUES === //
     glm::ivec2 windowSize;
     float aspect, deltaTime;
+    double additiveTime;
     std::vector<Model> models;
     std::vector<Object> objects;
     glm::vec3 sunDirection;
+    glm::vec3 sunColor;
     
     // === LOW VALUES === //
     double time;

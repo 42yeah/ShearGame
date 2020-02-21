@@ -44,11 +44,11 @@ vec3 mapGreeness(float p) {
 vec3 fog(vec3 pos, vec3 col) {
     float far = 50.0;
     float fogness = pow(min(pos.z, far) / far, 5.5);
-    return mix(col, vec3(0.9, 0.9, 0.99), fogness);
+    return mix(col, sun.color, min(1.0, fogness));
 }
 
 vec3 phongDir(vec3 i) {
-    float ambientFac = 0.1;
+    float ambientFac = 0.05;
     vec3 ambient = sun.color * ambientFac;
     
     vec3 norm = normalize(normal);

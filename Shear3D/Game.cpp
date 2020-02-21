@@ -39,14 +39,13 @@ void Game::init() {
     
     time = glfwGetTime();
     deltaTime = 0.0f;
-    sunDirection = glm::normalize(glm::vec3(-1.0f, -1.0f, 0.0f));
     
     models = loadModels("Assets/Model/shear.1.obj", "Assets/Model");
     loadMap("Assets/map");
 }
 
 void Game::clear() {
-    glClearColor(0.9f, 0.9f, 0.99f, 1.0f);
+    glClearColor(sunColor.r, sunColor.g, sunColor.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -56,7 +55,7 @@ void Game::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     renderProgram.use();
     glUniform3f(renderProgram.loc("sun.dir"), sunDirection.x, sunDirection.y, sunDirection.z);
-    glUniform3f(renderProgram.loc("sun.color"), 1.0f, 1.0f, 1.0f);
+    glUniform3f(renderProgram.loc("sun.color"), sunColor.x, sunColor.y, sunColor.z);
     camera.pass(aspect, renderProgram.loc("view"), renderProgram.loc("perspective"));
     glUniformMatrix4fv(renderProgram.loc("model"), 1, GL_FALSE, glm::value_ptr(glm::scale(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 200.0f))));
     glBindVertexArray(ground);
@@ -84,6 +83,11 @@ void Game::update() {
     double now = glfwGetTime();
     deltaTime = (float) now - time;
     time = now;
+    additiveTime += deltaTime;
+    
+    float s = additiveTime * 0.05f;
+    sunDirection = glm::vec3(-cosf(s), -sin(s), 0.0f);
+    sunColor = glm::mix(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.9f, 0.9f, 0.99f), sin(s) * 0.5f + 0.5f);
     
     if (glfwGetKey(nativeWindow, GLFW_KEY_R)) {
         if (!reloadKeyPressed) {
