@@ -14,10 +14,14 @@
 #include "Program.hpp"
 
 
+enum PassType {
+    HDR, SHADOW
+};
+
 class Pass {
 public:
     Pass() {}
-    Pass(glm::ivec2 size);
+    Pass(glm::ivec2 size, PassType passType = HDR);
     
     void pass(GLuint loc, int tex);
     void use();
@@ -26,6 +30,7 @@ public:
 private:
     GLuint fbo, rbo;
     GLuint texture;
+    PassType type;
 };
 
 #endif /* Pass_hpp */

@@ -36,7 +36,7 @@ void Game::init() {
     renderProgram = Program("Assets/default.vertex.glsl", "Assets/default.fragment.glsl");
     postEffectProgram = Program("Assets/posteffect.vertex.glsl", "Assets/posteffect.fragment.glsl");
     camera = Camera(glm::vec3(0.0f, 1.63f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    
+
     time = glfwGetTime();
     deltaTime = 0.0f;
     
@@ -50,6 +50,7 @@ void Game::clear() {
 }
 
 void Game::render() {
+    glViewport(0, 0, windowSize.x, windowSize.y);
     renderPass.use();
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -86,10 +87,8 @@ void Game::update() {
     additiveTime += deltaTime;
     
     float s = additiveTime * 0.05f;
-    sunDirection = glm::vec3(-cosf(s), -sin(s), 0.0f);
-    sunColor = glm::mix(glm::vec3(0.01f, 0.01f, 0.01f), glm::vec3(0.9f, 0.9f, 0.99f), sin(s) * 0.5f + 0.5f);
-//    sunColor += glm::vec3(1.0f, 0.5f, 0.0f) * glm::max(0.0f, cosf(s));
-//    sunColor = glm::normalize(sunColor);
+    sunDirection = glm::normalize(glm::vec3(-cosf(s), -sin(s), 0.0f));
+    sunColor = glm::mix(glm::vec3(0.0f), glm::vec3(0.9f, 0.9f, 0.99f), sin(s) * 0.5f + 0.5f);
     
     if (glfwGetKey(nativeWindow, GLFW_KEY_R)) {
         if (!reloadKeyPressed) {

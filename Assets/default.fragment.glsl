@@ -48,13 +48,13 @@ vec3 fog(vec3 pos, vec3 col) {
 }
 
 vec3 phongDir(vec3 i) {
-    float ambientFac = 0.05;
-    vec3 ambient = sun.color * ambientFac;
-    
+    float ambientFac = 0.1;
+    vec3 ambient = (sun.color + vec3(0.01, 0.01, 0.01)) * ambientFac;
+
     vec3 norm = normalize(normal);
     float diffuseFac = max(dot(-normalize(sun.dir), norm), 0.0);
     vec3 diffuse = sun.color * diffuseFac;
-    
+
     return (ambient + diffuse) * i;
 }
 
@@ -62,6 +62,13 @@ void main() {
     vec2 uv = pos.xz;
     uv *= 20.0;
     vec3 grassColor = mapGreeness(perlin(uv));
+    
+//    vec4 m = sun.lightMat * vec4(pos, 1.0);
+//    vec3 mappedPos = m.xyz / m.w;
+//    float nearestDepth = texture(shadow, mappedPos.xy * 0.5 + 0.5).r;
+//    color = vec4((1.0 - s), nearestDepth, nearestDepth, 1.0);
+//    return;
+    
     if (texCoord.x == -1.0) {
         color = vec4(fog(mvpPos.xyz, phongDir(grassColor)), 1.0);
         return;

@@ -22,7 +22,9 @@ vec3 dottify(vec3 i) {
 
 void main() {
     vec2 u = uv;
+    
     vec3 texColor = texture(tex, u).rgb;
     
     color = vec4(dottify(gamma(texColor)), 1.0);
+//    color = texture(shadow, u);
 }
