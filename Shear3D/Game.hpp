@@ -39,6 +39,7 @@ private:
     GLuint genereateGround();
     
     void loadMap(std::string path);
+    void addObject(int id, glm::vec3 pos, float rotY = 0.0f);
 
     // === PASSES === //
     Program renderProgram;

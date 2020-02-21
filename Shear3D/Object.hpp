@@ -16,10 +16,11 @@
 class Object {
 public:
     Object() {}
-    Object(Model *model, glm::mat4 modelMat);
+    Object(glm::vec3 pos, Model *model, glm::mat4 modelMat);
     
     void render(Program &program);
 
+    glm::vec3 pos;
     glm::mat4 modelMat;
     Model *model;
 };

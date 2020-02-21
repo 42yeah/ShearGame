@@ -10,7 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-Object::Object(Model *model, glm::mat4 modelMat) : model(model), modelMat(modelMat) {
+Object::Object(glm::vec3 pos, Model *model, glm::mat4 modelMat) : pos(pos), model(model), modelMat(modelMat) {
 }
 
 void Object::render(Program &program) {

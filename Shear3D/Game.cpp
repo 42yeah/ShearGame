@@ -46,7 +46,7 @@ void Game::init() {
 }
 
 void Game::clear() {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.9f, 0.9f, 0.99f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -58,11 +58,14 @@ void Game::render() {
     glUniform3f(renderProgram.loc("sun.dir"), sunDirection.x, sunDirection.y, sunDirection.z);
     glUniform3f(renderProgram.loc("sun.color"), 1.0f, 1.0f, 1.0f);
     camera.pass(aspect, renderProgram.loc("view"), renderProgram.loc("perspective"));
-    glUniformMatrix4fv(renderProgram.loc("model"), 1, GL_FALSE, glm::value_ptr(glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 100.0f))));
+    glUniformMatrix4fv(renderProgram.loc("model"), 1, GL_FALSE, glm::value_ptr(glm::scale(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 200.0f))));
     glBindVertexArray(ground);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     // === RENDER MODELS === //
     for (int i = 0; i < objects.size(); i++) {
+        if (glm::length(objects[i].pos - camera.position) >= 60.0f) {
+            continue; // Clip
+        }
         objects[i].render(renderProgram);
     }
     renderPass.unuse();
@@ -92,7 +95,8 @@ void Game::update() {
     } else {
         reloadKeyPressed = false;
     }
-    glm::vec3 f(camera.front.x, 0.0f, camera.front.z);
+    glm::vec3 f(camera.front.x, camera.front.y, camera.front.z);
+    f = glm::normalize(f);
     if (glfwGetKey(nativeWindow, GLFW_KEY_W)) {
         camera.position += f * deltaTime * 4.0f;
     }
@@ -150,13 +154,131 @@ void Game::loadMap(std::string path) {
     objects.clear();
     std::ifstream reader(path);
     
+    float z = 0.0f;
     while (!reader.eof()) {
-        float x, y, z;
-        int i;
-        reader >> x >> y >> z >> i;
-        glm::mat4 modelMat(1.0f);
-        modelMat = glm::translate(modelMat, glm::vec3(x, y, z));
-        Object object(&models[i], modelMat);
-        objects.push_back(object);
+        std::string line;
+        std::getline(reader, line, '\n');
+        for (int x = 0; x < line.size(); x++) {
+            switch (line[x]) {
+                case '#':
+                    addObject(0, glm::vec3(x, 0.0f, z));
+                    addObject(0, glm::vec3(x, 1.0f, z));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    break;
+                    
+                case '^':
+                    addObject(0, glm::vec3(x, 0.0f, z));
+                    addObject(0, glm::vec3(x, 1.0f, z));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    addObject(0, glm::vec3(x, 3.0f, z));
+                    addObject(0, glm::vec3(x, 4.0f, z));
+                    break;
+                    
+                case '+':
+                    addObject(3, glm::vec3(x, 0.0f, z));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    break;
+                    
+                case '=':
+                    addObject(3, glm::vec3(x, 0.0f, z));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    addObject(0, glm::vec3(x, 3.0f, z));
+                    addObject(0, glm::vec3(x, 4.0f, z));
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    break;
+                    
+                case '|':
+                    addObject(3, glm::vec3(x, 0.0f, z), glm::radians(90.0f));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    break;
+                    
+                case '-':
+                    addObject(3, glm::vec3(x, 0.0f, z), glm::radians(90.0f));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    addObject(0, glm::vec3(x, 3.0f, z));
+                    addObject(0, glm::vec3(x, 4.0f, z));
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    break;
+                    
+                case '.':
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    break;
+                    
+                case ',':
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    addObject(0, glm::vec3(x, 4.0f, z));
+                    break;
+                    
+                case '0':
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    addObject(1, glm::vec3(x, 0.0f, z - 0.5f));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    break;
+                    
+                case '1':
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    addObject(1, glm::vec3(x, 0.0f, z - 0.5f));
+                    addObject(0, glm::vec3(x, 4.0f, z));
+                    break;
+                    
+                case '~':
+                    addObject(6, glm::vec3(x, 0.0f, z));
+                    break;
+                    
+                case '7':
+                    addObject(5, glm::vec3(x, 0.0f, z));
+                    break;
+                    
+                case 'O':
+                    addObject(4, glm::vec3(x, 0.0f, z));
+                    addObject(6, glm::vec3(x, 0.0f, z));
+                    break;
+                    
+                case 'a':
+                case 'b':
+                case 'c':
+                case 'd':
+                    addObject(7, glm::vec3(x, 0.0f, z), glm::radians(90.0f * (line[x] - 'a')));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    break;
+                    
+                case '!':
+                    addObject(6, glm::vec3(x, 0.0f, z));
+                    addObject(8, glm::vec3(x, 0.0f, z));
+                    break;
+                    
+                case 'e':
+                case 'f':
+                case 'g':
+                case 'h':
+                    if (line[x] == 'h') {
+                        addObject(0, glm::vec3(x, 2.0f, z));
+                    }
+                    addObject(9, glm::vec3(x, 0.0f, z + 0.01f), glm::radians(90.0f * (line[x] - 'e')));
+                    break;
+                    
+                case 'i':
+                case 'j':
+                case 'k':
+                case 'l':
+                    addObject(10, glm::vec3(x, 0.0f, z), glm::radians(90.0f * (line[x] - 'i')));
+                    addObject(2, glm::vec3(x, 0.0f, z));
+                    addObject(0, glm::vec3(x, 2.0f, z));
+                    break;
+            }
+        }
+        z++;
     }
 }
+
+void Game::addObject(int id, glm::vec3 pos, float rotY) {
+    glm::mat4 off(1.0f);
+    off = glm::translate(off, pos);
+    off = glm::rotate(off, rotY, glm::vec3(0.0f, 1.0f, 0.0f));
+    Object object(pos, &models[id], off);
+    objects.push_back(object);
+}
+
