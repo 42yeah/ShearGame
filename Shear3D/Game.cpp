@@ -14,7 +14,7 @@
 #include "tests.hpp"
 
 
-Game::Game(GLFWwindow *window) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true) {
+Game::Game(GLFWwindow *window) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), waypointKeyPressed(false) {
     init();
 }
 
@@ -32,16 +32,23 @@ void Game::init() {
     updateWindowSize();
     ground = genereateGround();
     rect = generateTestRect();
+    monster = generateMonsterRect();
     renderPass = Pass(windowSize);
     renderProgram = Program("Assets/default.vertex.glsl", "Assets/default.fragment.glsl");
+    monsterProgram = Program("Assets/monster.vertex.glsl", "Assets/monster.fragment.glsl");
     postEffectProgram = Program("Assets/posteffect.vertex.glsl", "Assets/posteffect.fragment.glsl");
-    camera = Camera(glm::vec3(0.0f, 1.63f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    camera = Camera(glm::vec3(0.0f, 1.45f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     time = glfwGetTime();
     deltaTime = 0.0f;
+    day = 0;
+    dayLock = false;
+    additiveTime = 0.0f;
     
     models = loadModels("Assets/Model/shear.1.obj", "Assets/Model");
     loadMap("Assets/map");
+    monsterTexture = Texture("Assets/Monsters/Monsters.png", RGBA);
+    loadMonsters("Assets/monsterlist");
 }
 
 void Game::clear() {
@@ -50,6 +57,7 @@ void Game::clear() {
 }
 
 void Game::render() {
+//    std::cout << camera.position.x << ", " << camera.position.y << ", " << camera.position.z << std::endl;
     glViewport(0, 0, windowSize.x, windowSize.y);
     renderPass.use();
     glEnable(GL_DEPTH_TEST);
@@ -67,6 +75,15 @@ void Game::render() {
             continue; // Clip
         }
         objects[i].render(renderProgram);
+    }
+    monsterProgram.use();
+    glUniform3f(monsterProgram.loc("sun.color"), sunColor.x, sunColor.y, sunColor.z);
+    camera.pass(aspect, monsterProgram.loc("view"), monsterProgram.loc("perspective"));
+    for (int i = 0; i < monsters.size(); i++) {
+        if (glm::length(monsters[i].position - camera.position) >= 60.0f) {
+            continue; // Clip
+        }
+        monsters[i].render(monsterProgram);
     }
     renderPass.unuse();
     
@@ -86,21 +103,54 @@ void Game::update() {
     time = now;
     additiveTime += deltaTime;
     
-    float s = additiveTime * 0.05f;
-    sunDirection = glm::normalize(glm::vec3(-cosf(s), -sin(s), 0.0f));
-    sunColor = glm::mix(glm::vec3(0.0f), glm::vec3(0.9f, 0.9f, 0.99f), sin(s) * 0.5f + 0.5f);
+    float s = additiveTime * 0.04f;
+    float standarized = sinf(s - 3.14159f / 2.0f) * 0.5f + 0.5f;
+    
+    if (standarized < 0.1f && !dayLock) {
+        day++;
+        dayLock = true;
+        std::cout << "A new day has begun.";
+    }
+    if (standarized > 0.1f) {
+        dayLock = false;
+    }
+    
+    sunDirection = glm::normalize(glm::vec3(-sinf(s), cosf(s), 0.0f));
+    sunColor = glm::mix(glm::vec3(0.0f), glm::vec3(0.9f, 0.9f, 0.99f), standarized);
     
     if (glfwGetKey(nativeWindow, GLFW_KEY_R)) {
         if (!reloadKeyPressed) {
             reloadKeyPressed = true;
             renderProgram.reload();
             postEffectProgram.reload();
+            monsterProgram.reload();
             loadMap("Assets/map");
+            loadMonsters("Assets/monsterlist");
         }
     } else {
         reloadKeyPressed = false;
     }
-    glm::vec3 f(camera.front.x, camera.front.y, camera.front.z);
+    
+    if (glfwGetKey(nativeWindow, GLFW_KEY_SPACE)) {
+        if (!waypointKeyPressed) {
+            waypointKeyPressed = true;
+            Ramp ramp;
+            ramp.time = standarized;
+            ramp.destination = camera.position;
+            ramps.push_back(ramp);
+        }
+    } else {
+        waypointKeyPressed = false;
+    }
+    if (glfwGetKey(nativeWindow, GLFW_KEY_K)) {
+        for (int i = 0; i < ramps.size(); i++) {
+            Ramp ramp = ramps[i];
+            std::cout << "R " << ramp.time << " " << ramp.destination.x << " " << ramp.destination.y << " " << ramp.destination.z << std::endl;
+        }
+        ramps.clear();
+    }
+    
+    glm::vec3 f(camera.front.x, 0.0f, camera.front.z);
     f = glm::normalize(f);
     if (glfwGetKey(nativeWindow, GLFW_KEY_W)) {
         camera.position += f * deltaTime * 4.0f;
@@ -114,6 +164,10 @@ void Game::update() {
     if (glfwGetKey(nativeWindow, GLFW_KEY_D)) {
         camera.position += glm::cross(f, camera.up) * deltaTime * 4.0f;
     }
+    
+    for (int i = 0; i < monsters.size(); i++) {
+        monsters[i].update(deltaTime, standarized, day);
+    }
 }
 
 GLuint Game::genereateGround() { 
@@ -125,6 +179,30 @@ GLuint Game::genereateGround() {
         1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
         -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
         -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f
+    };
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, nullptr);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void *) (sizeof(float) * 3));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 8, (void *) (sizeof(float) * 6));
+    return VAO;
+}
+
+GLuint Game::generateMonsterRect() {
+    GLuint VAO, VBO;
+    float triangle[] = {
+        -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
+        0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
+        0.5f, 2.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
+        0.5f, 2.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
+        -0.5f, 2.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
+        -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f
     };
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -326,3 +404,27 @@ void Game::addObject(int id, glm::vec3 pos, float rotY) {
     objects.push_back(object);
 }
 
+void Game::loadMonsters(std::string path) { 
+    monsters.clear();
+    std::ifstream reader(path);
+    int index = -1;
+    while (!reader.eof()) {
+        int id;
+        char action;
+        float time, x, y, z;
+        reader >> action;
+        switch (action) {
+            case 'M':
+                reader >> id >> x >> y >> z;
+                monsters.push_back(Monster(&monsterTexture, id, glm::vec3(x, y, z), monster));
+                index++;
+                break;
+                
+            case 'R':
+                reader >> time >> x >> y >> z;
+                monsters[index].ramps.push_back(Ramp{ time, glm::vec3(x, y, z) });
+                break;
+        }
+        
+    }
+}

@@ -19,6 +19,7 @@
 		F106C0BC23FEBD7000320ED8 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0BA23FEBD7000320ED8 /* Model.cpp */; };
 		F106C0C123FEC44200320ED8 /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0BF23FEC44200320ED8 /* Texture.cpp */; };
 		F106C0C523FED3B400320ED8 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0C323FED3B400320ED8 /* Object.cpp */; };
+		F106C0CD240034A000320ED8 /* Monster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0CB240034A000320ED8 /* Monster.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -75,6 +76,11 @@
 		F106C0C323FED3B400320ED8 /* Object.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
 		F106C0C423FED3B400320ED8 /* Object.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Object.hpp; sourceTree = "<group>"; };
 		F106C0C623FED48F00320ED8 /* map */ = {isa = PBXFileReference; lastKnownFileType = text; path = map; sourceTree = "<group>"; wrapsLines = 0; };
+		F106C0C9240031AA00320ED8 /* monster.vertex.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = monster.vertex.glsl; sourceTree = "<group>"; };
+		F106C0CA240031B500320ED8 /* monster.fragment.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = monster.fragment.glsl; sourceTree = "<group>"; };
+		F106C0CB240034A000320ED8 /* Monster.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Monster.cpp; sourceTree = "<group>"; };
+		F106C0CC240034A000320ED8 /* Monster.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Monster.hpp; sourceTree = "<group>"; };
+		F106C0CE24004AE600320ED8 /* monsterlist */ = {isa = PBXFileReference; lastKnownFileType = text; path = monsterlist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +135,8 @@
 				F106C0C023FEC44200320ED8 /* Texture.hpp */,
 				F106C0C323FED3B400320ED8 /* Object.cpp */,
 				F106C0C423FED3B400320ED8 /* Object.hpp */,
+				F106C0CB240034A000320ED8 /* Monster.cpp */,
+				F106C0CC240034A000320ED8 /* Monster.hpp */,
 			);
 			path = Shear3D;
 			sourceTree = "<group>";
@@ -177,6 +185,9 @@
 				F106C0B223FE8F1100320ED8 /* posteffect.vertex.glsl */,
 				F106C0B323FE8F1E00320ED8 /* posteffect.fragment.glsl */,
 				F106C0C623FED48F00320ED8 /* map */,
+				F106C0C9240031AA00320ED8 /* monster.vertex.glsl */,
+				F106C0CA240031B500320ED8 /* monster.fragment.glsl */,
+				F106C0CE24004AE600320ED8 /* monsterlist */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -260,6 +271,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F106C0CD240034A000320ED8 /* Monster.cpp in Sources */,
 				F106C0A923FE822A00320ED8 /* Program.cpp in Sources */,
 				F106C08C23FE7E2000320ED8 /* main.cpp in Sources */,
 				F106C0B923FE9D9300320ED8 /* Camera.cpp in Sources */,

@@ -13,10 +13,14 @@
 #include "../Includes/glad/glad.h"
 
 
+enum TextureInternalFormat {
+    RGB, RGBA
+};
+
 class Texture {
 public:
     Texture() {}
-    Texture(std::string path);
+    Texture(std::string path, TextureInternalFormat format = RGB);
     
     void pass(GLuint loc, int tex);
 

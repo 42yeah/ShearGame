@@ -11,7 +11,7 @@
 #include "../Includes/stb_image.h"
 
 
-Texture::Texture(std::string path) { 
+Texture::Texture(std::string path, TextureInternalFormat format) {
     stbi_set_flip_vertically_on_load(true);
     int w, h, ch;
     unsigned char *bytes = stbi_load(path.c_str(), &w, &h, &ch, 0);
@@ -22,7 +22,17 @@ Texture::Texture(std::string path) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
+    switch (format) {
+        case RGB:
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
+            break;
+            
+        case RGBA:
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+            break;
+    }
     
     width = w;
     height = h;

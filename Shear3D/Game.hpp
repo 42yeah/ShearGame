@@ -17,6 +17,7 @@
 #include "Camera.hpp"
 #include "Model.hpp"
 #include "Object.hpp"
+#include "Monster.hpp"
 
 
 /**
@@ -37,12 +38,15 @@ public:
 private:
     void updateWindowSize();
     GLuint genereateGround();
+    GLuint generateMonsterRect();
     
     void loadMap(std::string path);
+    void loadMonsters(std::string path);
     void addObject(int id, glm::vec3 pos, float rotY = 0.0f);
 
     // === PASSES === //
     Program renderProgram;
+    Program monsterProgram;
     Pass renderPass;
     Program postEffectProgram;
     Camera camera;
@@ -51,18 +55,25 @@ private:
     glm::ivec2 windowSize;
     float aspect, deltaTime;
     double additiveTime;
+    Texture monsterTexture;
     std::vector<Model> models;
     std::vector<Object> objects;
+    std::vector<Monster> monsters;
     glm::vec3 sunDirection;
     glm::vec3 sunColor;
+    int day;
     
     // === LOW VALUES === //
     double time;
     bool reloadKeyPressed;
-    GLuint ground, rect;
+    GLuint ground, rect, monster;
     GLFWwindow *nativeWindow;
     glm::vec2 prevMousePos;
     bool firstMouse;
+    bool dayLock;
+    
+    std::vector<Ramp> ramps;
+    bool waypointKeyPressed;
 };
 
 #endif /* Game_hpp */
