@@ -18,6 +18,7 @@
 		F106C0B923FE9D9300320ED8 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0B723FE9D9300320ED8 /* Camera.cpp */; };
 		F106C0BC23FEBD7000320ED8 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0BA23FEBD7000320ED8 /* Model.cpp */; };
 		F106C0C123FEC44200320ED8 /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0BF23FEC44200320ED8 /* Texture.cpp */; };
+		F106C0C523FED3B400320ED8 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F106C0C323FED3B400320ED8 /* Object.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -71,6 +72,9 @@
 		F106C0BF23FEC44200320ED8 /* Texture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Texture.cpp; sourceTree = "<group>"; };
 		F106C0C023FEC44200320ED8 /* Texture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Texture.hpp; sourceTree = "<group>"; };
 		F106C0C223FEC4D700320ED8 /* stb_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
+		F106C0C323FED3B400320ED8 /* Object.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
+		F106C0C423FED3B400320ED8 /* Object.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Object.hpp; sourceTree = "<group>"; };
+		F106C0C623FED48F00320ED8 /* map */ = {isa = PBXFileReference; lastKnownFileType = text; path = map; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,6 +127,8 @@
 				F106C0BB23FEBD7000320ED8 /* Model.hpp */,
 				F106C0BF23FEC44200320ED8 /* Texture.cpp */,
 				F106C0C023FEC44200320ED8 /* Texture.hpp */,
+				F106C0C323FED3B400320ED8 /* Object.cpp */,
+				F106C0C423FED3B400320ED8 /* Object.hpp */,
 			);
 			path = Shear3D;
 			sourceTree = "<group>";
@@ -170,6 +176,7 @@
 				F106C0AE23FE86BC00320ED8 /* default.fragment.glsl */,
 				F106C0B223FE8F1100320ED8 /* posteffect.vertex.glsl */,
 				F106C0B323FE8F1E00320ED8 /* posteffect.fragment.glsl */,
+				F106C0C623FED48F00320ED8 /* map */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -261,6 +268,7 @@
 				F106C09823FE803D00320ED8 /* glad.c in Sources */,
 				F106C0B623FE935800320ED8 /* Game.cpp in Sources */,
 				F106C0A623FE815100320ED8 /* tests.cpp in Sources */,
+				F106C0C523FED3B400320ED8 /* Object.cpp in Sources */,
 				F106C0B123FE89B900320ED8 /* Pass.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

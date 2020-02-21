@@ -83,9 +83,7 @@ Model::Model(GLuint vao, int nVertices, Texture texture) : VAO(vao), numVertices
 }
 
 void Model::render(Program &program) {
-    program.use();
     texture.pass(program.loc("tex"), 0);
-    glUniformMatrix4fv(program.loc("model"), 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0)));
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
 }

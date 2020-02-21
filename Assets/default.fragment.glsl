@@ -38,7 +38,7 @@ float perlin(vec2 uv) {
 }
 
 vec3 mapGreeness(float p) {
-    return mix(vec3(0.02, 0.1, 0.02), vec3(0.2, 0.3, 0.2), p);
+    return mix(vec3(0.1, 0.4, 0.2), vec3(0.3, 0.6, 0.1), p);
 }
 
 vec3 fog(vec3 pos, vec3 col) {

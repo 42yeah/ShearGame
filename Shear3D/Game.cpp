@@ -10,6 +10,7 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <fstream>
 #include "tests.hpp"
 
 
@@ -40,7 +41,8 @@ void Game::init() {
     deltaTime = 0.0f;
     sunDirection = glm::normalize(glm::vec3(-1.0f, -1.0f, 0.0f));
     
-    models = loadModels("Assets/Model/shear.obj", "Assets/Model");
+    models = loadModels("Assets/Model/shear.1.obj", "Assets/Model");
+    loadMap("Assets/map");
 }
 
 void Game::clear() {
@@ -60,12 +62,15 @@ void Game::render() {
     glBindVertexArray(ground);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     // === RENDER MODELS === //
-    models[2].render(renderProgram);
+    for (int i = 0; i < objects.size(); i++) {
+        objects[i].render(renderProgram);
+    }
     renderPass.unuse();
     
     glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
     postEffectProgram.use();
+    glUniform1f(postEffectProgram.loc("aspect"), aspect);
     renderPass.pass(postEffectProgram.loc("tex"), 0);
     glBindVertexArray(rect);
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -82,21 +87,23 @@ void Game::update() {
             reloadKeyPressed = true;
             renderProgram.reload();
             postEffectProgram.reload();
+            loadMap("Assets/map");
         }
     } else {
         reloadKeyPressed = false;
     }
+    glm::vec3 f(camera.front.x, 0.0f, camera.front.z);
     if (glfwGetKey(nativeWindow, GLFW_KEY_W)) {
-        camera.position += camera.front * deltaTime * 4.0f;
+        camera.position += f * deltaTime * 4.0f;
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_A)) {
-        camera.position -= glm::cross(camera.front, camera.up) * deltaTime * 4.0f;
+        camera.position -= glm::cross(f, camera.up) * deltaTime * 4.0f;
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_S)) {
-        camera.position -= camera.front * deltaTime * 4.0f;
+        camera.position -= f * deltaTime * 4.0f;
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_D)) {
-        camera.position += glm::cross(camera.front, camera.up) * deltaTime * 4.0f;
+        camera.position += glm::cross(f, camera.up) * deltaTime * 4.0f;
     }
 }
 
@@ -137,4 +144,19 @@ void Game::mouseEvent(glm::vec2 mousePos) {
     camera.yaw += dPos.x;
     camera.pitch += dPos.y;
     camera.pitch = glm::max(glm::min(camera.pitch, 89.9f), -89.9f);
+}
+
+void Game::loadMap(std::string path) {
+    objects.clear();
+    std::ifstream reader(path);
+    
+    while (!reader.eof()) {
+        float x, y, z;
+        int i;
+        reader >> x >> y >> z >> i;
+        glm::mat4 modelMat(1.0f);
+        modelMat = glm::translate(modelMat, glm::vec3(x, y, z));
+        Object object(&models[i], modelMat);
+        objects.push_back(object);
+    }
 }

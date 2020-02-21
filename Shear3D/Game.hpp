@@ -16,6 +16,7 @@
 #include "Program.hpp"
 #include "Camera.hpp"
 #include "Model.hpp"
+#include "Object.hpp"
 
 
 /**
@@ -36,6 +37,8 @@ public:
 private:
     void updateWindowSize();
     GLuint genereateGround();
+    
+    void loadMap(std::string path);
 
     // === PASSES === //
     Program renderProgram;
@@ -47,6 +50,7 @@ private:
     glm::ivec2 windowSize;
     float aspect, deltaTime;
     std::vector<Model> models;
+    std::vector<Object> objects;
     glm::vec3 sunDirection;
     
     // === LOW VALUES === //
