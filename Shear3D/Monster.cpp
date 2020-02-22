@@ -47,7 +47,6 @@ void Monster::update(float dt, float time, int day, std::vector<Object> &objects
         destinationRamp = prevRamp;
         pathfind(destination, objects);
         pathIndex = 0;
-        std::cout << id << " has a new destination: " << destination.x << ", " << destination.y << ", " << destination.z << std::endl;
     }
 
     if (path.size() > 0) {
@@ -93,7 +92,7 @@ void Monster::pathfind(glm::vec3 destination, std::vector<Object> &objects) {
     while (!frontier.empty()) {
         Object *o = frontier[0];
         frontier.erase(frontier.begin(), frontier.begin() + 1);
-        if (!o || glm::length(o->pos - position) > 80.0f) {
+        if (!o || glm::length(o->pos - position) > 60.0f) {
             continue;
         }
 //        std::cout << o->pos.x << ", " << o->pos.y << ", " << o->pos.z << " - " << destination.x << ", " << destination.y << ", " << destination.z << std::endl;

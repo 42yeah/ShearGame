@@ -145,7 +145,7 @@ void Game::update() {
     if (glfwGetKey(nativeWindow, GLFW_KEY_K)) {
         for (int i = 0; i < ramps.size(); i++) {
             Ramp ramp = ramps[i];
-            std::cout << "R " << ramp.time << " " << ramp.destination.x << " " << ramp.destination.y << " " << ramp.destination.z << std::endl;
+            std::cout << "R " << ramp.time << " " << glm::round(ramp.destination.x) << " " << 0 << " " << glm::round(ramp.destination.z) << std::endl;
         }
         ramps.clear();
     }
