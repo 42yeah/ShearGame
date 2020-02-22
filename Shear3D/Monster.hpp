@@ -13,6 +13,7 @@
 #include <vector>
 #include "Program.hpp"
 #include "Texture.hpp"
+#include "Object.hpp"
 
 
 struct Ramp {
@@ -25,7 +26,10 @@ public:
     Monster() {}
     Monster(Texture *tex, int id, glm::vec3 position, GLuint VAO);
     
-    void update(float dt, float time, int day);
+    void update(float dt, float time, int day, std::vector<Object> &objects);
+    void pathfind(glm::vec3 destination, std::vector<Object> &objects);
+    
+    Object *lookup(glm::vec3 pos, std::vector<Object> &objects);
 
     void render(Program &program);
 
@@ -36,6 +40,9 @@ public:
     GLuint VAO;
     Texture *texture;
     int id;
+    std::vector<Object *> path;
+    Ramp *destinationRamp;
+    int pathIndex;
 };
 
 #endif /* Monster_hpp */

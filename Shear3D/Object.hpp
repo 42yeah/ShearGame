@@ -13,16 +13,22 @@
 #include "Model.hpp"
 
 
+enum ObjectType {
+    PASSABLE, OBSTACLE
+};
+
 class Object {
 public:
     Object() {}
-    Object(glm::vec3 pos, Model *model, glm::mat4 modelMat);
+    Object(glm::vec3 pos, Model *model, glm::mat4 modelMat, ObjectType type);
     
     void render(Program &program);
 
     glm::vec3 pos;
     glm::mat4 modelMat;
     Model *model;
+    Object *prev;
+    ObjectType type;
 };
 
 #endif /* Object_hpp */

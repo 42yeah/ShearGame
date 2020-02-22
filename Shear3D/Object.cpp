@@ -10,10 +10,11 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-Object::Object(glm::vec3 pos, Model *model, glm::mat4 modelMat) : pos(pos), model(model), modelMat(modelMat) {
+Object::Object(glm::vec3 pos, Model *model, glm::mat4 modelMat, ObjectType type) : pos(pos), model(model), modelMat(modelMat), prev(nullptr), type(type) {
 }
 
 void Object::render(Program &program) {
     glUniformMatrix4fv(program.loc("model"), 1, GL_FALSE, glm::value_ptr(modelMat));
     model->render(program);
 }
+

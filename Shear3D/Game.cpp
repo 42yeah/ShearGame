@@ -37,7 +37,7 @@ void Game::init() {
     renderProgram = Program("Assets/default.vertex.glsl", "Assets/default.fragment.glsl");
     monsterProgram = Program("Assets/monster.vertex.glsl", "Assets/monster.fragment.glsl");
     postEffectProgram = Program("Assets/posteffect.vertex.glsl", "Assets/posteffect.fragment.glsl");
-    camera = Camera(glm::vec3(0.0f, 1.45f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    camera = Camera(glm::vec3(15.0f, 1.45f, 6.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     time = glfwGetTime();
     deltaTime = 0.0f;
@@ -109,14 +109,14 @@ void Game::update() {
     if (standarized < 0.1f && !dayLock) {
         day++;
         dayLock = true;
-        std::cout << "A new day has begun.";
+        std::cout << "A new day has begun." << std::endl;
     }
     if (standarized > 0.1f) {
         dayLock = false;
     }
     
     sunDirection = glm::normalize(glm::vec3(-sinf(s), cosf(s), 0.0f));
-    sunColor = glm::mix(glm::vec3(0.0f), glm::vec3(0.9f, 0.9f, 0.99f), standarized);
+    sunColor = glm::pow(glm::mix(glm::vec3(0.0f), glm::vec3(0.9f, 0.9f, 0.99f), standarized), glm::vec3(1.2f));
     
     if (glfwGetKey(nativeWindow, GLFW_KEY_R)) {
         if (!reloadKeyPressed) {
@@ -164,9 +164,12 @@ void Game::update() {
     if (glfwGetKey(nativeWindow, GLFW_KEY_D)) {
         camera.position += glm::cross(f, camera.up) * deltaTime * 4.0f;
     }
+    if (glfwGetKey(nativeWindow, GLFW_KEY_K)) {
+        std::cout << standarized << std::endl;
+    }
     
     for (int i = 0; i < monsters.size(); i++) {
-        monsters[i].update(deltaTime, standarized, day);
+        monsters[i].update(deltaTime, standarized, day, objects);
     }
 }
 
@@ -400,7 +403,21 @@ void Game::addObject(int id, glm::vec3 pos, float rotY) {
     glm::mat4 off(1.0f);
     off = glm::translate(off, pos);
     off = glm::rotate(off, rotY, glm::vec3(0.0f, 1.0f, 0.0f));
-    Object object(pos, &models[id], off);
+    ObjectType type = PASSABLE;
+    switch (id) {
+        case 0: // Brick
+        case 4: // Well
+        case 5: // Tree
+        case 9: // Stall
+        case 7: // Chest
+        case 11: // Table
+            type = OBSTACLE;
+            break;
+            
+        default:
+            break;
+    }
+    Object object(pos, &models[id], off, type);
     objects.push_back(object);
 }
 
@@ -415,6 +432,9 @@ void Game::loadMonsters(std::string path) {
         reader >> action;
         switch (action) {
             case 'M':
+                if (index != -1 && monsters[index].ramps.size() > 0) {
+                    monsters[index].ramps.push_back(Ramp { 1.0f, glm::vec3(0.0f, 0.0f, 0.0f ) });
+                }
                 reader >> id >> x >> y >> z;
                 monsters.push_back(Monster(&monsterTexture, id, glm::vec3(x, y, z), monster));
                 index++;
