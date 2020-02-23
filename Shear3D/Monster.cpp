@@ -95,21 +95,25 @@ void Monster::pathfind(glm::vec3 destination, std::vector<Object> &objects) {
         if (!o || glm::length(o->pos - position) > 60.0f) {
             continue;
         }
-//        std::cout << o->pos.x << ", " << o->pos.y << ", " << o->pos.z << " - " << destination.x << ", " << destination.y << ", " << destination.z << std::endl;
-//        std::cout << "Destination " << glm::length(o->pos - destination) << std::endl;
         if (length(o->pos - destination) < 0.01f) {
             // We are here!
             result = o;
             break;
         }
+        std::vector<glm::ivec2> offsets;
+        glm::vec3 dPos = destination - o->pos;
         for (int z = -1; z <= 1; z++) {
             for (int x = -1; x <= 1; x++) {
                 if (abs(x) == abs(z)) { continue; }
                 Object *no = lookup(glm::vec3(o->pos.x + x, o->pos.y, o->pos.z + z), objects);
                 if (no && no->type == PASSABLE && no->prev == nullptr && no != origin) {
-//                    std::cout << "Pushing back " << no->pos.x << ", " << no->pos.y << ", " << no->pos.z << std::endl;
                     no->prev = o;
-                    frontier.push_back(no);
+                    if (dPos.x * x > 0 || dPos.z * z > 0) {
+                        // General direction is right; append
+                        frontier.insert(frontier.begin(), no);
+                    } else {
+                        frontier.push_back(no);
+                    }
                 }
             }
         }

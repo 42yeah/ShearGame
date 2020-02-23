@@ -37,7 +37,7 @@ void Game::init() {
     renderProgram = Program("Assets/default.vertex.glsl", "Assets/default.fragment.glsl");
     monsterProgram = Program("Assets/monster.vertex.glsl", "Assets/monster.fragment.glsl");
     postEffectProgram = Program("Assets/posteffect.vertex.glsl", "Assets/posteffect.fragment.glsl");
-    camera = Camera(glm::vec3(15.0f, 1.45f, 6.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    camera = Camera(glm::vec3(4.0, 1.45f, 9.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     time = glfwGetTime();
     deltaTime = 0.0f;
@@ -103,7 +103,7 @@ void Game::update() {
     time = now;
     additiveTime += deltaTime;
     
-    float s = additiveTime * 0.04f;
+    float s = additiveTime * 0.02f;
     float standarized = sinf(s - 3.14159f / 2.0f) * 0.5f + 0.5f;
     
     if (standarized < 0.1f && !dayLock) {
