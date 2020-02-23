@@ -100,7 +100,6 @@ void Monster::pathfind(glm::vec3 destination, std::vector<Object> &objects) {
             result = o;
             break;
         }
-        std::vector<glm::ivec2> offsets;
         glm::vec3 dPos = destination - o->pos;
         for (int z = -1; z <= 1; z++) {
             for (int x = -1; x <= 1; x++) {
