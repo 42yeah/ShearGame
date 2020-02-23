@@ -17,7 +17,7 @@ vec3 dottify(vec3 i) {
     u.x *= aspect;
     float l = min(pow(length(u) + 0.99, 100.0), 1.0);
     
-    return mix(vec3(0.0), i, l);
+    return mix(1.0 - i, i, l);
 }
 
 void main() {

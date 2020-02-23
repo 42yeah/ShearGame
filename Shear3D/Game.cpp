@@ -171,20 +171,22 @@ void Game::update() {
     
     // Collision check
     float objWidth = 0.55f;
+    glm::vec3 newCameraPos = camera.position;
     for (int i = 0; i < objects.size(); i++) {
-        if (objects[i].type == PASSABLE || objects[i].pos.y != 0 || glm::distance(objects[i].pos, camera.position) > 20.0f) {
+        if (objects[i].type == PASSABLE || objects[i].pos.y != 0 || glm::distance(objects[i].pos, camera.position) > 3.0f) {
             continue;
         }
         glm::vec3 objPos = objects[i].pos;
-        if (!(camera.position.x < objPos.x - objWidth ||
-            camera.position.x > objPos.x + objWidth ||
-            camera.position.z < objPos.z - objWidth ||
-              camera.position.z > objPos.z + objWidth)) {
-            // Nope
-            camera.position = oldCameraPos;
-            break;
+        if (collides(camera.position, objPos, objWidth)) {
+            camera.position.x = oldCameraPos.x;
+            if (collides(camera.position, objPos, objWidth)) {
+                camera.position.x = newCameraPos.x;
+                camera.position.z = oldCameraPos.z;
+                if (collides(camera.position, objPos, objWidth)) {
+                    camera.position = oldCameraPos;
+                }
+            }
         }
-        
     }
     
     for (int i = 0; i < monsters.size(); i++) {
@@ -382,6 +384,11 @@ void Game::loadMap(std::string path) {
                     addObject(0, glm::vec3(x, 2.0f, z));
                     break;
                     
+                case '*':
+                    addObject(10, glm::vec3(x, 0.0f, z), glm::radians(90.0f));
+                    addObject(6, glm::vec3(x, 0.0f, z));
+                    break;
+                    
                 case 'I':
                 case 'J':
                 case 'K':
@@ -467,3 +474,11 @@ void Game::loadMonsters(std::string path) {
         
     }
 }
+
+bool Game::collides(glm::vec3 pos, glm::vec3 objPos, float objWidth) { 
+    return (!(pos.x < objPos.x - objWidth ||
+              pos.x > objPos.x + objWidth ||
+              pos.z < objPos.z - objWidth ||
+              pos.z > objPos.z + objWidth));
+}
+
