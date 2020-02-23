@@ -151,6 +151,7 @@ void Game::update() {
     }
     
     glm::vec3 f(camera.front.x, 0.0f, camera.front.z);
+    glm::vec3 oldCameraPos = camera.position; // For collision detection
     f = glm::normalize(f);
     if (glfwGetKey(nativeWindow, GLFW_KEY_W)) {
         camera.position += f * deltaTime * 4.0f;
@@ -166,6 +167,24 @@ void Game::update() {
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_K)) {
         std::cout << standarized << std::endl;
+    }
+    
+    // Collision check
+    float objWidth = 0.55f;
+    for (int i = 0; i < objects.size(); i++) {
+        if (objects[i].type == PASSABLE || objects[i].pos.y != 0 || glm::distance(objects[i].pos, camera.position) > 20.0f) {
+            continue;
+        }
+        glm::vec3 objPos = objects[i].pos;
+        if (!(camera.position.x < objPos.x - objWidth ||
+            camera.position.x > objPos.x + objWidth ||
+            camera.position.z < objPos.z - objWidth ||
+              camera.position.z > objPos.z + objWidth)) {
+            // Nope
+            camera.position = oldCameraPos;
+            break;
+        }
+        
     }
     
     for (int i = 0; i < monsters.size(); i++) {
