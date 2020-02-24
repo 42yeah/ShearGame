@@ -14,7 +14,7 @@
 #include "tests.hpp"
 
 
-Game::Game(GLFWwindow *window) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), waypointKeyPressed(false) {
+Game::Game(GLFWwindow *window) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), waypointKeyPressed(false), escaping(false) {
     init();
 }
 
@@ -165,6 +165,10 @@ void Game::update() {
     if (glfwGetKey(nativeWindow, GLFW_KEY_D)) {
         camera.position += glm::cross(f, camera.up) * deltaTime * 4.0f;
     }
+    if (glfwGetKey(nativeWindow, GLFW_KEY_P)) {
+        escaping = !escaping;
+        escape(escaping);
+    }
     if (glfwGetKey(nativeWindow, GLFW_KEY_K)) {
         std::cout << standarized << std::endl;
     }
@@ -274,7 +278,11 @@ GLuint Game::generateMonsterRect() {
     return VAO;
 }
 
-void Game::mouseEvent(glm::vec2 mousePos) { 
+void Game::mouseEvent(glm::vec2 mousePos) {
+    if (escaping) {
+        firstMouse = true;
+        return;
+    }
     if (firstMouse) {
         prevMousePos = mousePos;
         firstMouse = false;
@@ -578,3 +586,12 @@ void Game::interact() {
     }
 //    std::cout << index << std::endl;
 }
+
+void Game::escape(bool es) {
+    if (es) {
+        glfwSetInputMode(nativeWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    } else {
+        glfwSetInputMode(nativeWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+}
+

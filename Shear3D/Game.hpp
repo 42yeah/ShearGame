@@ -35,6 +35,7 @@ public:
     void render();
     void mouseEvent(glm::vec2 mousePos);
     void interact();
+    void escape(bool es);
     
 private:
     void updateWindowSize();
@@ -73,6 +74,7 @@ private:
     glm::vec2 prevMousePos;
     bool firstMouse;
     bool dayLock;
+    bool escaping;
     
     std::vector<Ramp> ramps;
     bool waypointKeyPressed;
