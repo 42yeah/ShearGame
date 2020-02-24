@@ -18,6 +18,7 @@
 #include "Model.hpp"
 #include "Object.hpp"
 #include "Monster.hpp"
+#include "../Includes/imgui/imgui.h"
 
 
 /**
@@ -27,12 +28,13 @@
 class Game {
 public:
     Game() {}
-    Game(GLFWwindow *window);
+    Game(GLFWwindow *window, ImGuiIO *io);
     
     void init();
     void clear();
     void update();
     void render();
+    void renderGUI();
     void mouseEvent(glm::vec2 mousePos);
     void interact();
     void escape(bool es);
@@ -75,9 +77,10 @@ private:
     bool firstMouse;
     bool dayLock;
     bool escaping;
-    
-    std::vector<Ramp> ramps;
-    bool waypointKeyPressed;
+    ImGuiIO *io;
+    std::vector<std::string> notifications;
+
+    bool tabPressed;
 };
 
 #endif /* Game_hpp */

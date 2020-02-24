@@ -14,7 +14,7 @@
 #include "tests.hpp"
 
 
-Game::Game(GLFWwindow *window) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), waypointKeyPressed(false), escaping(false) {
+Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io) {
     init();
 }
 
@@ -131,23 +131,15 @@ void Game::update() {
         reloadKeyPressed = false;
     }
     
-    if (glfwGetKey(nativeWindow, GLFW_KEY_SPACE)) {
-        if (!waypointKeyPressed) {
-            waypointKeyPressed = true;
-            Ramp ramp;
-            ramp.time = standarized;
-            ramp.destination = camera.position;
-            ramps.push_back(ramp);
+    if (glfwGetKey(nativeWindow, GLFW_KEY_TAB)) {
+        if (!tabPressed) {
+            tabPressed = true;
+            escaping = !escaping;
+            escape(escaping);
+            std::cout << "Escaping is now " << escaping << std::endl;
         }
     } else {
-        waypointKeyPressed = false;
-    }
-    if (glfwGetKey(nativeWindow, GLFW_KEY_K)) {
-        for (int i = 0; i < ramps.size(); i++) {
-            Ramp ramp = ramps[i];
-            std::cout << "R " << ramp.time << " " << glm::round(ramp.destination.x) << " " << 0 << " " << glm::round(ramp.destination.z) << std::endl;
-        }
-        ramps.clear();
+        tabPressed = false;
     }
     
     glm::vec3 f(camera.front.x, 0.0f, camera.front.z);
@@ -164,10 +156,6 @@ void Game::update() {
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_D)) {
         camera.position += glm::cross(f, camera.up) * deltaTime * 4.0f;
-    }
-    if (glfwGetKey(nativeWindow, GLFW_KEY_P)) {
-        escaping = !escaping;
-        escape(escaping);
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_K)) {
         std::cout << standarized << std::endl;
@@ -595,3 +583,10 @@ void Game::escape(bool es) {
     }
 }
 
+void Game::renderGUI() {
+    ImGui::SetNextWindowPos(ImVec2{ 10, 10 });
+    ImGui::Begin("Story");
+    ImGui::Text("Your father just commited suicide after losing a bet worth of 1000 eggs with the local rich man.\nIt is now up to you to pay the debt.\nLuckily, you have a well which spurts infinite amount of gold coins at your backyard.\nWhen you get enough eggs, find the rich man,\nand fullfill your side of the deal!");
+    ImGui::Button("Dismiss");
+    ImGui::End();
+}

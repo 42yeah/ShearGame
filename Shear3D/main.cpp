@@ -43,8 +43,6 @@ int main(int argc, const char * argv[]) {
     glfwSetMouseButtonCallback(window, mouseCallBack);
     glfwMakeContextCurrent(window);
     gladLoadGL();
-
-    game = Game(window);
     
     // === SETUP IMGUI === //
     ImGui::CreateContext();
@@ -52,6 +50,7 @@ int main(int argc, const char * argv[]) {
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
+    game = Game(window, &io);
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -62,12 +61,10 @@ int main(int argc, const char * argv[]) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        ImGui::ShowDemoWindow();
+        game.renderGUI();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
-        
-        
     }
     return 0;
 }
