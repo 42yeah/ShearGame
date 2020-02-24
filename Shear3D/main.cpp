@@ -9,6 +9,10 @@
 #include <iostream>
 #include "../Includes/glad/glad.h"
 #include <GLFW/glfw3.h>
+#define IMGUI_IMPL_OPENGL_LOADER_GLAD
+#include "../Includes/imgui/imgui.h"
+#include "../Includes/imgui/examples/imgui_impl_glfw.h"
+#include "../Includes/imgui/examples/imgui_impl_opengl3.h"
 #include "Game.hpp"
 #include "tests.hpp"
 
@@ -41,13 +45,29 @@ int main(int argc, const char * argv[]) {
     gladLoadGL();
 
     game = Game(window);
+    
+    // === SETUP IMGUI === //
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330 core");
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         game.clear();
         game.update();
         game.render();
+        
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGui::ShowDemoWindow();
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
+        
+        
     }
     return 0;
 }
