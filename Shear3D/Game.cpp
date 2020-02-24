@@ -522,3 +522,59 @@ bool Game::collides(glm::vec3 pos, glm::vec3 objPos, float objWidth) {
               pos.z > objPos.z + objWidth));
 }
 
+void Game::interact() {
+    // Ray march to get the cube intersection
+    float depth = 0.0f;
+    int index = -1;
+    bool isMonster = false;
+    float recordedDepth = -1.0f;
+    for (int i = 0; i < 25 && index == -1; i++) {
+        float closest = 10000.0f;
+        glm::vec3 nCamPos = camera.position + depth * camera.front;
+        for (int i = 0; i < objects.size(); i++) {
+            float dst = glm::distance(nCamPos, objects[i].pos);
+            if (dst < closest) {
+                closest = dst;
+                if (!(nCamPos.x < objects[i].pos.x - 0.5f ||
+                      nCamPos.x > objects[i].pos.x + 0.5f ||
+                      nCamPos.z < objects[i].pos.z - 0.5f ||
+                      nCamPos.z > objects[i].pos.z + 0.5f ||
+                      nCamPos.y < objects[i].pos.y ||
+                      nCamPos.y > objects[i].pos.y + objects[i].depth)) {
+                    if (index == -1 || recordedDepth < depth) {
+                        index = i;
+                        objects[i].selected = 1;
+                        recordedDepth = depth;
+                        isMonster = false;
+                    }
+                    continue;
+                }
+                objects[i].selected = 0;
+            }
+        }
+        for (int i = 0; i < monsters.size(); i++) {
+            float dst = glm::distance(nCamPos, monsters[i].position);
+            if (dst < closest) {
+                closest = dst;
+                if (!(nCamPos.x < monsters[i].position.x - 0.5f ||
+                      nCamPos.x > monsters[i].position.x + 0.5f ||
+                      nCamPos.z < monsters[i].position.z - 0.5f ||
+                      nCamPos.z > monsters[i].position.z + 0.5f ||
+                      nCamPos.y < monsters[i].position.y ||
+                      nCamPos.y > monsters[i].position.y + 1.6f)) {
+                    if (index == -1 || recordedDepth < depth) {
+                        index = i;
+                        isMonster = true;
+                        recordedDepth = depth;
+                    }
+                    continue;
+                }
+            }
+        }
+        depth += closest / 5.0f;
+    }
+    if (isMonster) {
+        std::cout << "Monster selected: " << index << std::endl;
+    }
+//    std::cout << index << std::endl;
+}

@@ -5,6 +5,7 @@ in vec3 pos;
 in vec3 normal;
 in vec2 texCoord;
 
+uniform int selected;
 uniform sampler2D tex;
 
 struct Sun {
@@ -74,4 +75,7 @@ void main() {
         return;
     }
     color = vec4(fog(mvpPos.xyz, phongDir(texture(tex, texCoord).rgb)), 1.0);
+    if (selected == 1) {
+        color = vec4(1.0, 0.0, 0.0, 1.0);
+    }
 }

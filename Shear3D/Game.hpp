@@ -34,6 +34,7 @@ public:
     void update();
     void render();
     void mouseEvent(glm::vec2 mousePos);
+    void interact();
     
 private:
     void updateWindowSize();

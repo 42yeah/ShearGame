@@ -19,6 +19,14 @@ void cursorCallback(GLFWwindow *window, double x, double y) {
     game.mouseEvent(glm::vec2(x, y));
 }
 
+void mouseCallBack(GLFWwindow *window, int button, int action, int mods) {
+//    double x, y;
+//    glfwGetCursorPos(window, &x, &y);
+    if (button == 1 && action == 1) {
+        game.interact();
+    }
+}
+
 int main(int argc, const char * argv[]) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -28,6 +36,7 @@ int main(int argc, const char * argv[]) {
     GLFWwindow *window = glfwCreateWindow(800, 600, "Shear 3D", nullptr, nullptr);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, cursorCallback);
+    glfwSetMouseButtonCallback(window, mouseCallBack);
     glfwMakeContextCurrent(window);
     gladLoadGL();
 
