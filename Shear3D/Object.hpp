@@ -14,7 +14,7 @@
 
 
 enum ObjectType {
-    PASSABLE, OBSTACLE
+    PASSABLE, OBSTACLE, SITTABLE, SLEEPABLE
 };
 
 class Object {

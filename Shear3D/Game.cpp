@@ -43,7 +43,7 @@ void Game::init() {
     deltaTime = 0.0f;
     day = 0;
     dayLock = false;
-    additiveTime = 0.0f;
+    additiveTime = 30.0f;
     
     models = loadModels("Assets/Model/shear.1.obj", "Assets/Model");
     loadMap("Assets/map");
@@ -173,7 +173,8 @@ void Game::update() {
     float objWidth = 0.55f;
     glm::vec3 newCameraPos = camera.position;
     for (int i = 0; i < objects.size(); i++) {
-        if (objects[i].type == PASSABLE || objects[i].pos.y != 0 || glm::distance(objects[i].pos, camera.position) > 3.0f) {
+        if (objects[i].type != OBSTACLE || objects[i].pos.y != 0 || glm::distance(objects[i].pos, camera.position) > 4.0f) {
+//            std::cout << desired << std::endl;
             continue;
         }
         glm::vec3 objPos = objects[i].pos;
@@ -188,7 +189,38 @@ void Game::update() {
             }
         }
     }
-    
+    bool stat = false;
+    objWidth = 0.5f;
+    for (int i = 0; i < objects.size(); i++) {
+        if (objects[i].type == PASSABLE || objects[i].type == OBSTACLE || objects[i].pos.y != 0 || glm::distance(objects[i].pos, camera.position) > 4.0f) {
+            continue;
+        }
+        if (collides(oldCameraPos, objects[i].pos, objWidth)) {
+            float desired;
+            switch (objects[i].type) {
+                case SLEEPABLE:
+                    desired = 1.75f;
+                    break;
+
+                case SITTABLE:
+                    desired = 1.95f;
+                    break;
+
+                default:
+                    desired = 1.45f;
+                    break;
+            }
+            float dy = desired - camera.position.y;
+            camera.position.y += dy * 4.0f * deltaTime;
+            stat = true;
+            break;
+        }
+    }
+    if (!stat) {
+        float dy = 1.45f - camera.position.y;
+        camera.position.y += dy * 4.0f * deltaTime;
+    }
+
     for (int i = 0; i < monsters.size(); i++) {
         monsters[i].update(deltaTime, standarized, day, objects);
     }
@@ -438,6 +470,14 @@ void Game::addObject(int id, glm::vec3 pos, float rotY) {
         case 7: // Chest
         case 11: // Table
             type = OBSTACLE;
+            break;
+            
+        case 1: // Bed
+            type = SLEEPABLE;
+            break;
+            
+        case 10:
+            type = SITTABLE;
             break;
             
         default:

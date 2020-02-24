@@ -105,7 +105,7 @@ void Monster::pathfind(glm::vec3 destination, std::vector<Object> &objects) {
             for (int x = -1; x <= 1; x++) {
                 if (abs(x) == abs(z)) { continue; }
                 Object *no = lookup(glm::vec3(o->pos.x + x, o->pos.y, o->pos.z + z), objects);
-                if (no && no->type == PASSABLE && no->prev == nullptr && no != origin) {
+                if (no && no->type != OBSTACLE && no->prev == nullptr && no != origin) {
                     no->prev = o;
                     if (dPos.x * x > 0 || dPos.z * z > 0) {
                         // General direction is right; append
