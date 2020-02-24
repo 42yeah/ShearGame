@@ -287,6 +287,7 @@
 		F1EFEF9224041E2B008AB6F4 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		F1EFEF9324041E2B008AB6F4 /* imgui_demo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_demo.cpp; sourceTree = "<group>"; };
 		F1EFEF9424041E2B008AB6F4 /* imgui_draw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_draw.cpp; sourceTree = "<group>"; };
+		F1EFEFA624042A60008AB6F4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -304,6 +305,7 @@
 		F106C07F23FE7E2000320ED8 = {
 			isa = PBXGroup;
 			children = (
+				F1EFEFA624042A60008AB6F4 /* README.md */,
 				F106C0AC23FE860700320ED8 /* Assets */,
 				F106C09F23FE807500320ED8 /* Includes */,
 				F106C08A23FE7E2000320ED8 /* Shear3D */,
