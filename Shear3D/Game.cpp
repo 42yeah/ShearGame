@@ -543,13 +543,11 @@ void Game::interact() {
                       nCamPos.y > objects[i].pos.y + objects[i].depth)) {
                     if (index == -1 || recordedDepth < depth) {
                         index = i;
-                        objects[i].selected = 1;
                         recordedDepth = depth;
                         isMonster = false;
                     }
                     continue;
                 }
-                objects[i].selected = 0;
             }
         }
         for (int i = 0; i < monsters.size(); i++) {
@@ -575,6 +573,8 @@ void Game::interact() {
     }
     if (isMonster) {
         std::cout << "Monster selected: " << index << std::endl;
+    } else {
+        std::cout << "Object selected: " << index << std::endl;
     }
 //    std::cout << index << std::endl;
 }

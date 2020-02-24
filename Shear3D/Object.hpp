@@ -29,7 +29,6 @@ public:
     Model *model;
     Object *prev;
     ObjectType type;
-    int selected;
     float depth;
 };
 

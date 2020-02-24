@@ -127,14 +127,9 @@ void Monster::pathfind(glm::vec3 destination, std::vector<Object> &objects) {
 
 Object *Monster::lookup(glm::vec3 pos, std::vector<Object> &objects) {
     for (int i = 0; i < objects.size(); i++) {
-//        glm::vec3 dPos = objects[i].pos - pos;
         if (glm::length(objects[i].pos - pos) < 0.01f) {
             return &objects[i];
         }
-//        float manhattan = fabs(dPos.x) + fabs(dPos.y);
-//        if (manhattan < 0.5) {
-//            return &objects[i];
-//        }
     }
     return nullptr;
 }
