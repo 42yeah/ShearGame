@@ -109,7 +109,8 @@ void Game::update() {
     updateWindowSize();
     double now = glfwGetTime();
     deltaTime = (float) now - time;
-    
+    const float sleepFlipper = 5.0f;
+
     // === GAME RELATED UPDATES === //
     if (state == SLEEPING) {
         bedCounter -= deltaTime * 0.2f;
@@ -119,7 +120,7 @@ void Game::update() {
         bedCounter = glm::min(1.0f, bedCounter);
     }
     if (bedCounter < 0) {
-        deltaTime *= 10.0;
+        deltaTime *= sleepFlipper;
         stamina += deltaTime * 0.1f;
         hunger -= deltaTime * 0.03f;
         stamina = glm::min(4.0f, stamina);
@@ -173,15 +174,27 @@ void Game::update() {
     glm::vec3 oldCameraPos = camera.position; // For collision detection
     f = glm::normalize(f);
     if (glfwGetKey(nativeWindow, GLFW_KEY_W)) {
+        if (state == SLEEPING) {
+            deltaTime /= sleepFlipper;
+        }
         camera.position += f * deltaTime * 4.0f;
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_A)) {
+        if (state == SLEEPING) {
+            deltaTime /= sleepFlipper;
+        }
         camera.position -= glm::cross(f, camera.up) * deltaTime * 4.0f;
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_S)) {
+        if (state == SLEEPING) {
+            deltaTime /= sleepFlipper;
+        }
         camera.position -= f * deltaTime * 4.0f;
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_D)) {
+        if (state == SLEEPING) {
+            deltaTime /= sleepFlipper;
+        }
         camera.position += glm::cross(f, camera.up) * deltaTime * 4.0f;
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_K)) {
