@@ -106,6 +106,8 @@ private:
     float steakPrice;
     int steaks;
     float steakCounter;
+    bool axed;
+    bool rented;
     
     // === LOW VALUES === //
     double time;

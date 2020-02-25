@@ -43,6 +43,14 @@ std::string Item::getItemName(bool includesQuantity) {
         case PARTIALLY_EATEN_LAVISH_MEAL:
             ret = "partially eaten lavish meal";
             break;
+            
+        case AXE:
+            ret = "axe";
+            break;
+            
+        case TACO:
+            ret = "taco";
+            break;
     }
     if (includesQuantity) {
         ret += " x" + std::to_string(quantity);
@@ -123,6 +131,24 @@ void Item::invoke(Game *game) {
             game->stamina -= 1.0f;
             game->notifications.push_back(Notification("Item used", "You ate the partially eaten lavish meal.\nMan, is this good! Even with all those saliva around.\nYou swallowed it down in disgust.", true, 10.0f));
             break;
+            
+        case AXE:
+            quantity--;
+            game->hunger -= 10.0f;
+            game->stamina -= 10.0f;
+            game->notifications.push_back(Notification("Item used", "You ate the axe. IT HURTS LIKE HELL!\nOh no! The axe head is poking out of your stomach!", true, 10.0f));
+            break;
+            
+        case TACO:
+            quantity--;
+            game->hunger += 1.0f;
+            game->stamina += 0.5f;
+            game->notifications.push_back(Notification("Item used", "You ate the taco. It's pretty standard.", true, 10.0f));
+            if (game->state != SITTING) {
+                msg += "\nHowever, you ate without chair. That's VERY uncomfortable.";
+                game->stamina -= 0.8f;
+                game->hunger -= 0.3f;
+            }
+            break;
     }
-    
 }

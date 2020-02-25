@@ -63,6 +63,10 @@ void Game::init() {
     flipper = 1.0f;
     interactingObject = nullptr;
     interactingMonster = nullptr;
+    axed = false;
+    rented = false;
+    
+    addItem(Item(COIN, 500));
 }
 
 void Game::clear() {
@@ -898,6 +902,8 @@ void Game::refresh() {
     steakPrice = distrib(dev);
     steaks = 0;
     steakCounter = priceDistrib(dev);
+    
+    rented = false;
 }
 
 

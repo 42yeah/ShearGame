@@ -366,7 +366,186 @@ void Monster::interact(Game *game) {
                             ImGui::Text("*PSSHHAUARAHJSIF*\n(You've got a partially-eaten lavish meal!)\nYou FECKING FECKER! WHAT THE FECK? POLIZEI!");
                             break;
                     }
+                    break;
+            }
+            
+        case 3:
+            switch (rampIndex) {
+                case 0:
+                    ImGui::Text("Zzz... Oh, it's you. Zzz...");
+                    break;
                     
+                case 1:
+                    ImGui::Text("Having breakfast here. Leave me alone!");
+                    break;
+                    
+                case 2:
+                case 4:
+                    switch (conversationId) {
+                        case 0:
+                        {
+                            int price = 400;
+                            bool affordable = price <= game->getQuantityOf(COIN);
+                            if (affordable && !game->axed) {
+                                ImGui::Text("Hey, look, I have a spare axe and I am looking to sell it.\nDo you wanna buy? This is just between you and me.");
+                            } else {
+                                ImGui::Text("I live in this forest. I chop trees down for a livin'.");
+                            }
+                            if (affordable && ImGui::Button("OK, I'll take it")) {
+                                conversationId = 1;
+                                game->addItem(Item(COIN, -price));
+                                game->addItem(Item(AXE, 1));
+                            }
+                            if (ImGui::Button("Why do you live here?")) {
+                                conversationId = 2;
+                            }
+                            
+                            break;
+                        }
+                            
+                        case 1:
+                            ImGui::Text("There you are.\nHave fun using it, it costed me 10 coins!\n... I mean 500!");
+                            break;
+                            
+                        case 2:
+                            ImGui::Text("Because I am a forester. Foresters live in forests.");
+                            if (ImGui::Button("Oh yeah?")) {
+                                conversationId = 3;
+                            }
+                            break;
+                            
+                        case 3:
+                            ImGui::Text("Of course!\nYou looking for a fight?\nA fight is what you are gonna get!");
+                            break;
+                    }
+                    break;
+
+                case 3:
+                    ImGui::Text("Isn't today lovely? I mean look at the sky!");
+                    break;
+            }
+            
+        case 4:
+            switch (rampIndex) {
+                case 0:
+                    switch (conversationId) {
+                        case 0:
+                        {
+                            ImGui::Text("Zzz... Hmm Caterina...");
+                            if (ImGui::Button("Impersonate Caterina")) {
+                                conversationId = 1;
+                            }
+                            break;
+                        }
+                            
+                        case 1:
+                            ImGui::Text("How are you going to impersonate?");
+                            if (ImGui::Button("I love you too, Johnson...")) {
+                                conversationId = 2;
+                            }
+                            if (ImGui::Button("You jump, I jump, remember?")) {
+                                conversationId = 2;
+                            }
+                            if (ImGui::Button("We were on a break!")) {
+                                conversationId = 2;
+                            }
+                            if (ImGui::Button("Feck off.")) {
+                                conversationId = 2;
+                            }
+                            
+                        case 2:
+                            ImGui::Text("What the hell are you talking about? THEIF!");
+                            break;
+                    }
+                    break;
+                    
+                case 1:
+                    ImGui::Text("Good morning.\nGoing to my girlfriend's to have breakfast.");
+                    break;
+                    
+                case 2:
+                case 3:
+                    ImGui::Text("My girlfriend is a little bit grumpy at times.\nNevermind that!");
+                    break;
+                    
+                case 4:
+                    ImGui::Text("Gotta go to work now.");
+                    break;
+                    
+                case 5:
+                case 6:
+                    ImGui::Text("The commute is long, yes,\nbut it's not like I can do anything to change it!");
+                    break;
+                    
+                case 7:
+                case 8:
+                    ImGui::Text("See the big mansion over there?\nIt belongs to a very rich man.\nI hope I can live in those houses one day!");
+                    break;
+                    
+                case 9:
+                    switch (conversationId) {
+                        case 0:
+                        {
+                            int nightFee = 100;
+                            bool affordable = nightFee <= game->getQuantityOf(COIN);
+                            std::string msg = "Hello and welcome to the village hotel.";
+                            if (affordable && !game->rented) {
+                                msg += "\nDo you want to stay here for the night?\nIt costs " + std::to_string(nightFee) + " coins.";
+                            }
+                            if (game->rented) {
+                                msg += "\nAre you hungry?\nWe provide taco buffet for those who are hungry.\nTaken straight from the village chef!";
+                            }
+                            ImGui::Text("%s", msg.c_str());
+                            if (!game->rented && affordable && ImGui::Button("I'd like to stay here for the night.")) {
+                                conversationId = 1;
+                                game->rented = true;
+                                game->addItem(Item(COIN, -nightFee));
+                            }
+                            if (ImGui::Button("There are no customers here.")) {
+                                conversationId = 2;
+                            }
+                            if (ImGui::Button("Hands up, prepare to get mugged!")) {
+                                conversationId = 3;
+                            }
+                            if (game->rented && ImGui::Button("The chef makes taco too?")) {
+                                conversationId = 4;
+                            }
+                            if (game->rented && ImGui::Button("I'd love to have one.")) {
+                                if (game->steaks > 0) {
+                                    conversationId = 5;
+                                    game->steaks--;
+                                    game->addItem(Item(TACO, 1));
+                                } else {
+                                    conversationId = 6;
+                                }
+                            }
+                            break;
+                        }
+                            
+                        case 1:
+                            ImGui::Text("Thanks! Now take your time to sleep here.\nWe've got all sorts of rooms!");
+                            break;
+                            
+                        case 2:
+                            ImGui::Text("Yeah, our villages is actually very secluded.\nYou need to cross a peach blossom forest to get here.");
+                            break;
+                            
+                        case 3:
+                            ImGui::Text("OK, chillax now...\n(You hear a soft click.)\n(You hear very loud siren.)");
+                            break;
+                            
+                        case 4:
+                            ImGui::Text("Oh yes he does! He never sells it though.\nHe just provides it for the hotel.");
+                            break;
+                            
+                        case 5:
+                            ImGui::Text("Here you go. Please eat it while it's hot.");
+                            break;
+                            
+                        case 6:
+                            ImGui::Text("Oh sorry. But there are no more tacos now... Come back later!");
+                            break;
+                    }
                     break;
             }
             
@@ -375,10 +554,12 @@ void Monster::interact(Game *game) {
     }
     if (ImGui::Button("Try to leave") || destinationRamp != game->interactingMonsterRamp) {
         if ((id == 1 && conversationId == 1) ||
-            (id == 2 && rampIndex == 0)) {
+            (id == 2 && rampIndex == 0) ||
+            (id == 4 && rampIndex == 0 && conversationId == 2)) {
             game->jail("You were found breaking into someone's house.");
         }
-        if (id == 0 && conversationId == 1) {
+        if ((id == 0 && conversationId == 1) ||
+            (id == 3 && conversationId == 3)) {
             game->hospital("You got punched straight in the face and lose conciousness.");
         }
         if (id == 0 && conversationId == 2) {
@@ -392,6 +573,9 @@ void Monster::interact(Game *game) {
         }
         if (id == 2 && conversationId == 1) {
             game->jail("You were found lying.");
+        }
+        if (id == 4 && rampIndex == 9 && conversationId == 3) {
+            game->jail("You were found mugging.");
         }
         game->interactingMonster = nullptr;
     }
