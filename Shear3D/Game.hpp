@@ -65,7 +65,9 @@ private:
     void loadMonsters(std::string path);
     void addObject(int id, glm::vec3 pos, float rotY = 0.0f);
     bool collides(glm::vec3 pos, glm::vec3 objPos, float objWidth);
-    void jail();
+    void jail(std::string reason);
+    void hospital(std::string reason);
+    void addItem(Item item);
 
     // === PASSES === //
     Program renderProgram;
@@ -93,8 +95,10 @@ private:
     Object *interactingObject;
     Monster *interactingMonster;
     Ramp *interactingMonsterRamp;
+    bool interacting;
     float bedCounter;
     int jailDays;
+    float flipper;
     
     // === LOW VALUES === //
     double time;

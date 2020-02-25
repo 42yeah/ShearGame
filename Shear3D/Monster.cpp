@@ -59,7 +59,7 @@ void Monster::update(float dt, float time, int day, std::vector<Object> &objects
                 pathIndex++;
             }
         }
-        if (pathIndex == path.size() - 1) {
+        if (destinationRamp && pathIndex == path.size() - 1) {
             glm::vec3 dPos = destinationRamp->destination - position;
             position += dPos * speed * dt;
             return; // Get up chairs, etc.

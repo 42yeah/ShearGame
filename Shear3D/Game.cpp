@@ -14,7 +14,7 @@
 #include "tests.hpp"
 
 
-Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io), hunger(4.0f), stamina(2.0f), bedCounter(100.0f), jailDays(1) {
+Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io), hunger(4.0f), stamina(4.0f), bedCounter(100.0f), jailDays(1), interacting(false), flipper(1.0f), interactingObject(nullptr), interactingMonster(nullptr) {
     init();
 }
 
@@ -53,10 +53,6 @@ void Game::init() {
     notifications.push_back(Notification("Story", "Your father just commited suicide after losing a bet worth of 1000 eggs with the local rich man.\nIt is now up to you to pay the debt.\nLuckily, you have a well which spurts infinite amount of gold coins at your backyard.\nWhen you get enough eggs, find the rich man,\nand fullfill your side of the deal!", false, -1.0f));
     io->WantSaveIniSettings = false;
     io->IniFilename = nullptr;
-    
-    items.push_back(Item(STEAK, 3));
-    items.push_back(Item(EGG, 500));
-    items.push_back(Item(COIN, 25));
 }
 
 void Game::clear() {
@@ -105,12 +101,14 @@ void Game::render() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Game::update() { 
+void Game::update() {
+    const float sleepFlipper = 5.0f;
+
     updateWindowSize();
     double now = glfwGetTime();
     deltaTime = (float) now - time;
-    const float sleepFlipper = 5.0f;
 
+    deltaTime *= flipper;
     // === GAME RELATED UPDATES === //
     if (state == SLEEPING) {
         bedCounter -= deltaTime * 0.2f;
@@ -127,13 +125,20 @@ void Game::update() {
         
         for (int i = 0; i < monsters.size(); i++) {
             if (glm::distance(monsters[i].position, camera.position) <= 3.0f) {
-                jail();
+                jail("You were found sleeping in someone else's bed.");
                 break;
             }
         }
     } else {
         stamina -= deltaTime * 0.008f;
         hunger -= deltaTime * 0.02f;
+    }
+    if (hunger > 5.5f) {
+        hospital("You are way too full, your stomache bursted.");
+    } else if (hunger < 0.0f) {
+        hospital("You faint from lack of food.");
+    } else if (stamina < 0.0f) {
+        hospital("You passed out.");
     }
     
     time = now;
@@ -180,25 +185,25 @@ void Game::update() {
     glm::vec3 f(camera.front.x, 0.0f, camera.front.z);
     glm::vec3 oldCameraPos = camera.position; // For collision detection
     f = glm::normalize(f);
-    if (glfwGetKey(nativeWindow, GLFW_KEY_W)) {
+    if (glfwGetKey(nativeWindow, GLFW_KEY_W) && !interacting) {
         if (bedCounter < 0.0f) {
             deltaTime /= sleepFlipper;
         }
         camera.position += f * deltaTime * 4.0f;
     }
-    if (glfwGetKey(nativeWindow, GLFW_KEY_A)) {
+    if (glfwGetKey(nativeWindow, GLFW_KEY_A) && !interacting) {
         if (bedCounter < 0.0f) {
             deltaTime /= sleepFlipper;
         }
         camera.position -= glm::cross(f, camera.up) * deltaTime * 4.0f;
     }
-    if (glfwGetKey(nativeWindow, GLFW_KEY_S)) {
+    if (glfwGetKey(nativeWindow, GLFW_KEY_S) && !interacting) {
         if (bedCounter < 0.0f) {
             deltaTime /= sleepFlipper;
         }
         camera.position -= f * deltaTime * 4.0f;
     }
-    if (glfwGetKey(nativeWindow, GLFW_KEY_D)) {
+    if (glfwGetKey(nativeWindow, GLFW_KEY_D) && !interacting) {
         if (bedCounter < 0.0f) {
             deltaTime /= sleepFlipper;
         }
@@ -268,13 +273,6 @@ void Game::update() {
 
     for (int i = 0; i < monsters.size(); i++) {
         monsters[i].update(deltaTime, standarized, day, objects);
-    }
-    
-    if (interactingObject && glm::distance(interactingObject->pos, camera.position) <= 4.0f) {
-        interactingObject->interact(this);
-    }
-    if (interactingMonster) {
-        interactingMonster->interact(this);
     }
 }
 
@@ -518,6 +516,7 @@ void Game::addObject(int id, glm::vec3 pos, float rotY) {
     off = glm::translate(off, pos);
     off = glm::rotate(off, rotY, glm::vec3(0.0f, 1.0f, 0.0f));
     ObjectType type = PASSABLE;
+    ObstacleType obsType = NOPE;
     switch (id) {
         case 0: // Brick
         case 4: // Well
@@ -539,7 +538,20 @@ void Game::addObject(int id, glm::vec3 pos, float rotY) {
         default:
             break;
     }
-    Object object(pos, &models[id], off, type);
+    
+    switch (id) {
+        case 4:
+            obsType = WELL;
+            break;
+            
+        case 7:
+            obsType = CHEST;
+            break;
+            
+        default:
+            break;
+    }
+    Object object(pos, &models[id], off, type, obsType);
     objects.push_back(object);
 }
 
@@ -679,9 +691,9 @@ void Game::renderGUI() {
     }
     ImGui::SetNextWindowPos(ImVec2{ 10.0f, y }, ImGuiCond_Always);
 #ifdef __APPLE__
-        ImGui::SetNextWindowSizeConstraints(ImVec2{ windowSize.x * 0.5f * 0.9f, 50.0f }, ImVec2{ windowSize.x * 0.5f * 0.9f, 200.0f });
+        ImGui::SetNextWindowSizeConstraints(ImVec2{ windowSize.x * 0.5f * 0.9f, 200.0f }, ImVec2{ windowSize.x * 0.5f * 0.9f, 200.0f });
 #else
-        ImGui::SetNextWindowSizeConstraints(ImVec2{ windowSize.x * 0.9f, 50.0f }, ImVec2{ windowSize.x * 0.9f, 200.0f });
+        ImGui::SetNextWindowSizeConstraints(ImVec2{ windowSize.x * 0.9f, 200.0f }, ImVec2{ windowSize.x * 0.9f, 200.0f });
 #endif
     ImGui::Begin("Hungry", &open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
     if (hunger < 0.125f) {
@@ -742,17 +754,98 @@ void Game::renderGUI() {
         }
         ImGui::End();
     }
+    
+    if (interactingObject && glm::distance(interactingObject->pos, camera.position) <= 4.0f) {
+        interactingObject->interact(this);
+        interacting = true;
+    } else {
+        flipper = 1.0f;
+        interactingObject = nullptr;
+    }
+    if (interactingMonster) {
+        interactingMonster->interact(this);
+        interacting = true;
+    } else {
+        flipper = 1.0f;
+    }
+    if (!interactingObject && !interactingMonster) {
+        interacting = false;
+    }
 //    ImGui::ShowDemoWindow();
 }
 
-void Game::jail() {
+void Game::jail(std::string reason) {
     day += jailDays;
-    notifications.push_back(Notification("Jail", "You were found sleeping in someone else's bed.\nYou were sent to prison for " + std::to_string(jailDays) + " days.\nThe policeman warns you if you break the law next time, it will be worse.", false, -1.0f));
+    std::string msg = reason + "\nYou were sent to prison for " + std::to_string(jailDays) + " days.\nThe policeman warns you if you break the law next time, it will be worse.";
     camera.position = glm::vec3(48, 0.3, 7);
     bedCounter = 0.0f;
+    state = NORMAL;
     monsters[12].position = glm::vec3(48, 0.0, 6);
     monsters[12].destinationRamp = nullptr;
+    stamina = 2.0f;
+    hunger = 2.0f;
+    // Find coin
+    for (int i = 0; i < items.size(); i++) {
+        if (items[i].type == COIN) {
+            int amount = items[i].quantity * glm::min(32, jailDays) / 16;
+            items[i].quantity -= amount;
+            msg += "\nYou were required to pay a fine worth $" + std::to_string(amount) + ".";
+            if (items[i].quantity <= 0) {
+                items.erase(items.begin() + i, items.begin() + i + 1);
+            }
+            break;
+        }
+    }
+    notifications.push_back(Notification("Jail", msg, false, -1.0f));
     jailDays *= 2;
+}
+
+void Game::hospital(std::string reason) {
+    std::string msg = reason + "\nYou woke up in the hospital.\n";
+    std::uniform_int_distribution<> distrib(1, 10);
+    std::random_device dev;
+    int days = distrib(dev);
+    msg += "You stayed inside for " + std::to_string(days) + " days.\n";
+    camera.position = glm::vec3(13, 0.3, 26);
+    bedCounter = 0.0f;
+    state = NORMAL;
+    monsters[10].position = glm::vec3(14, 0.0, 26);
+    monsters[10].destinationRamp = nullptr;
+    stamina = 3.0f;
+    hunger = 3.0f;
+    // Find coin
+    for (int i = 0; i < items.size(); i++) {
+        if (items[i].type == EGG) {
+            distrib = std::uniform_int_distribution<>(1, items[i].quantity);
+            int amount = distrib(dev);
+            items[i].quantity -= amount;
+            msg += "\nThe doctor used " + std::to_string(amount) + " of your eggs to cook medicine.";
+            if (items[i].quantity <= 0) {
+                items.erase(items.begin() + i, items.begin() + i + 1);
+            }
+        }
+        if (items[i].type == COIN) {
+            distrib = std::uniform_int_distribution<>(1, items[i].quantity / 3);
+            int amount = distrib(dev);
+            items[i].quantity -= amount;
+            msg += "\nThe doctor charged you $" + std::to_string(amount) + ".";
+            if (items[i].quantity <= 0) {
+                items.erase(items.begin() + i, items.begin() + i + 1);
+            }
+            break;
+        }
+    }
+    notifications.push_back(Notification("Hospital", msg, false, -1.0f));
+}
+
+void Game::addItem(Item item) {
+    for (int i = 0; i < items.size(); i++) {
+        if (items[i].type == item.type) {
+            items[i].quantity += item.quantity;
+            return;
+        }
+    }
+    items.push_back(item);
 }
 
 

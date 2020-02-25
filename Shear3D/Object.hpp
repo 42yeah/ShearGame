@@ -19,10 +19,14 @@ enum ObjectType {
     PASSABLE, OBSTACLE, SITTABLE, SLEEPABLE
 };
 
+enum ObstacleType {
+    NOPE, CHEST, WELL
+};
+
 class Object {
 public:
     Object() {}
-    Object(glm::vec3 pos, Model *model, glm::mat4 modelMat, ObjectType type);
+    Object(glm::vec3 pos, Model *model, glm::mat4 modelMat, ObjectType type, ObstacleType obsType);
     
     void render(Program &program);
     
@@ -33,7 +37,10 @@ public:
     Model *model;
     Object *prev;
     ObjectType type;
+    ObstacleType obstacleType;
     float depth;
+    
+    int wellCounter;
 };
 
 #endif /* Object_hpp */
