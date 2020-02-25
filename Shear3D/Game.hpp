@@ -65,6 +65,7 @@ private:
     void loadMonsters(std::string path);
     void addObject(int id, glm::vec3 pos, float rotY = 0.0f);
     bool collides(glm::vec3 pos, glm::vec3 objPos, float objWidth);
+    void jail();
 
     // === PASSES === //
     Program renderProgram;

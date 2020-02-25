@@ -291,6 +291,7 @@
 		F1EFEFA624042A60008AB6F4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F1EFEFA9240506E4008AB6F4 /* Item.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Item.cpp; sourceTree = "<group>"; };
 		F1EFEFAA240506E4008AB6F4 /* Item.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Item.hpp; sourceTree = "<group>"; };
+		F1EFEFAF24052771008AB6F4 /* Monsters */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Monsters; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -393,6 +394,7 @@
 		F106C0AC23FE860700320ED8 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				F1EFEFAF24052771008AB6F4 /* Monsters */,
 				F106C0BE23FEC17900320ED8 /* Model */,
 				F106C0AD23FE86A500320ED8 /* default.vertex.glsl */,
 				F106C0AE23FE86BC00320ED8 /* default.fragment.glsl */,

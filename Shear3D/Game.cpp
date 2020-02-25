@@ -127,10 +127,7 @@ void Game::update() {
         
         for (int i = 0; i < monsters.size(); i++) {
             if (glm::distance(monsters[i].position, camera.position) <= 3.0f) {
-                day += jailDays;
-                notifications.push_back(Notification("Jail", "You were found sleeping in someone else's bed.\nYou were sent to prison for " + std::to_string(jailDays) + " days.\nThe policeman warns you if you break the law next time, it will be worse.", false, -1.0f));
-                camera.position = glm::vec3(48, 0.3, 7);
-                bedCounter = 0.0f;
+                jail();
                 break;
             }
         }
@@ -746,6 +743,16 @@ void Game::renderGUI() {
         ImGui::End();
     }
 //    ImGui::ShowDemoWindow();
+}
+
+void Game::jail() {
+    day += jailDays;
+    notifications.push_back(Notification("Jail", "You were found sleeping in someone else's bed.\nYou were sent to prison for " + std::to_string(jailDays) + " days.\nThe policeman warns you if you break the law next time, it will be worse.", false, -1.0f));
+    camera.position = glm::vec3(48, 0.3, 7);
+    bedCounter = 0.0f;
+    monsters[12].position = glm::vec3(48, 0.0, 6);
+    monsters[12].destinationRamp = nullptr;
+    jailDays *= 2;
 }
 
 
