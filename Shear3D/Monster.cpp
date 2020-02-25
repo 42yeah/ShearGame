@@ -368,6 +368,7 @@ void Monster::interact(Game *game) {
                     }
                     break;
             }
+            break;
             
         case 3:
             switch (rampIndex) {
@@ -424,6 +425,7 @@ void Monster::interact(Game *game) {
                     ImGui::Text("Isn't today lovely? I mean look at the sky!");
                     break;
             }
+            break;
             
         case 4:
             switch (rampIndex) {
@@ -490,7 +492,10 @@ void Monster::interact(Game *game) {
                             bool affordable = nightFee <= game->getQuantityOf(COIN);
                             std::string msg = "Hello and welcome to the village hotel.";
                             if (affordable && !game->rented) {
-                                msg += "\nDo you want to stay here for the night?\nIt costs " + std::to_string(nightFee) + " coins.";
+                                msg += "\nDo you want to stay here for the night?\nIt costs " + std::to_string(nightFee) + " coins.\nWe also provide unlimited buffet to those who stays.";
+                            }
+                            if (!affordable && !game->rented) {
+                                msg += "\nOh... Sorry, but you didn't seem to bring enough money!";
                             }
                             if (game->rented) {
                                 msg += "\nAre you hungry?\nWe provide taco buffet for those who are hungry.\nTaken straight from the village chef!";
