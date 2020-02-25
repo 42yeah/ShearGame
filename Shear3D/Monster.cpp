@@ -287,11 +287,95 @@ void Monster::interact(Game *game) {
             }
             break;
             
+        case 2:
+            switch (rampIndex) {
+                case 0:
+                    ImGui::Text("Zzz... OH POLICE!");
+                    break;
+                    
+                case 1:
+                    switch (conversationId) {
+                        case 0:
+                            ImGui::Text("Alright. You got %d days left. You got enough eggs?", 365 - game->day);
+                            if (ImGui::Button("Yep")) {
+                                conversationId = 1;
+                            }
+                            if (ImGui::Button("Nope")) {
+                                conversationId = 2;
+                            }
+                            break;
+                            
+                        case 1:
+                        {
+                            std::string msg = "Let me see...";
+                            bool enough = game->getQuantityOf(EGG) >= 1000;
+                            if (!enough) {
+                                msg += "\n(you do not have enough egg.)";
+                            }
+                            ImGui::Text("%s", msg.c_str());
+                            if (enough && ImGui::Button("Show him the eggs.")) {
+                                game->addItem(Item(EGG, -1000));
+                                conversationId = 3;
+                            }
+                            if (ImGui::Button("Punch him. Now!")) {
+                                conversationId = 4;
+                            }
+                            break;
+                        }
+                            
+                        case 2:
+                            ImGui::Text("Well, better go get it then.\nIf you still don't get 1000 eggs before the end of this year,\nyou will know the taste of eternal hell... HARRRR HARRH RHRRRR!");
+                            break;
+                            
+                        case 3:
+                            ImGui::Text("I am impressed. Alright, I will withdraw the sue.\n(YOU WIN THE GAME!)");
+                            break;
+                            
+                        case 4:
+                            ImGui::Text("Oh, you fecker! You are so gonna be dead! POLICE!");
+                            break;
+                    }
+                    break;
+                    
+                case 2:
+                case 3:
+                    ImGui::Text("Ha, it's you. I am not at my office hours. Come back later, when I am at my desk.");
+                    break;
+                    
+                case 4:
+                    ImGui::Text("Isn't this nice? I love my life.\nDo you hate yours?");
+                    break;
+                    
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                    ImGui::Text("Hm, It's you. I am not at my office hours. Come back later, when I am at my desk.");
+                    break;
+                    
+                case 9:
+                    switch (conversationId) {
+                        case 0:
+                            ImGui::Text("Om nom nom... What are you doing here?");
+                            if (ImGui::Button("Punch him. Now!")) {
+                                conversationId = 4;
+                            }
+                            break;
+                            
+                        case 4:
+                            ImGui::Text("*PSSHHAUARAHJSIF*\n(You've got a partially-eaten lavish meal!)\nYou FECKING FECKER! WHAT THE FECK? POLIZEI!");
+                            break;
+                    }
+                    
+                    break;
+            }
+            
         default:
             break;
     }
     if (ImGui::Button("Try to leave") || destinationRamp != game->interactingMonsterRamp) {
-        if (id == 1 && conversationId == 1) {
+        if ((id == 1 && conversationId == 1) ||
+            (id == 2 && rampIndex == 0)) {
             game->jail("You were found breaking into someone's house.");
         }
         if (id == 0 && conversationId == 1) {
@@ -299,6 +383,15 @@ void Monster::interact(Game *game) {
         }
         if (id == 0 && conversationId == 2) {
             game->jail("You were found beating the chef up.");
+        }
+        if (id == 2 && (rampIndex == 1 || rampIndex == 9) && conversationId == 4) {
+            game->jail("You were found beating the rich man up.");
+            if (rampIndex == 9) {
+                game->addItem(Item(PARTIALLY_EATEN_LAVISH_MEAL, 1));
+            }
+        }
+        if (id == 2 && conversationId == 1) {
+            game->jail("You were found lying.");
         }
         game->interactingMonster = nullptr;
     }

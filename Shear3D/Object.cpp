@@ -42,7 +42,7 @@ void Object::interact(Game *game) {
     switch (obstacleType) {
         case WELL:
             game->flipper = 2.5f;
-//            game->stamina -= 0.03 * game->deltaTime;
+            game->stamina -= 0.02 * game->deltaTime;
             game->escape(game->escaping = true);
             ImGui::SetNextWindowSize(ImVec2{ 300.0f, 100.0f }, ImGuiCond_FirstUseEver);
             ImGui::Begin("Well");

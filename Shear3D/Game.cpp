@@ -129,7 +129,7 @@ void Game::update() {
     }
     if (bedCounter < 0) {
         deltaTime *= sleepFlipper;
-        stamina += deltaTime * 0.05f;
+        stamina += deltaTime * 0.04f;
         hunger -= deltaTime * 0.03f;
         stamina = glm::min(4.0f, stamina);
         
@@ -162,7 +162,7 @@ void Game::update() {
     if (steakCounter < 0.0f) {
         steaks++;
         std::random_device dev;
-        std::uniform_real_distribution<> distrib(30.0f, 60.0f);
+        std::uniform_real_distribution<> distrib(15.0f, 40.0f);
         steakCounter = distrib(dev);
     }
     
@@ -829,6 +829,7 @@ void Game::hospital(std::string reason) {
     std::random_device dev;
     int days = distrib(dev);
     msg += "You stayed inside for " + std::to_string(days) + " days.\n";
+    day += days;
     camera.position = glm::vec3(13, 0.3, 26);
     bedCounter = 0.0f;
     state = NORMAL;
@@ -892,8 +893,8 @@ void Game::refresh() {
     eggCount = distrib(dev);
     eggPrice = glm::round(eggCount * priceDistrib(dev));
 
-    distrib = std::uniform_int_distribution<>(20, 90);
-    priceDistrib = std::uniform_real_distribution<>(30.0f, 60.0f);
+    distrib = std::uniform_int_distribution<>(20, 50);
+    priceDistrib = std::uniform_real_distribution<>(15.0f, 40.0f);
     steakPrice = distrib(dev);
     steaks = 0;
     steakCounter = priceDistrib(dev);

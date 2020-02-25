@@ -39,6 +39,10 @@ std::string Item::getItemName(bool includesQuantity) {
         case RADIOACTIVE_FISH:
             ret = "radioactive fish";
             break;
+            
+        case PARTIALLY_EATEN_LAVISH_MEAL:
+            ret = "partially eaten lavish meal";
+            break;
     }
     if (includesQuantity) {
         ret += " x" + std::to_string(quantity);
@@ -111,6 +115,13 @@ void Item::invoke(Game *game) {
                     break;
             }
             game->notifications.push_back(Notification("Itme used", msg.c_str(), true, 10.0f));
+            break;
+            
+        case PARTIALLY_EATEN_LAVISH_MEAL:
+            quantity--;
+            game->hunger += 1.5f;
+            game->stamina -= 1.0f;
+            game->notifications.push_back(Notification("Item used", "You ate the partially eaten lavish meal.\nMan, is this good! Even with all those saliva around.\nYou swallowed it down in disgust.", true, 10.0f));
             break;
     }
     
