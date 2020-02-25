@@ -59,24 +59,24 @@ void Item::invoke(Game *game) {
             switch (outcome) {
                 case 1:
                     msg = "You ate the " + getItemName() + ". It was burnt, and extremely salty.";
-                    game->hunger += 0.25f;
-                    game->stamina -= 0.25f;
+                    game->hunger += 0.5f;
+                    game->stamina -= 0.15f;
                     break;
                     
                 case 2:
                     msg = "You ate the " + getItemName() + ". It was really hard to bite.";
-                    game->hunger += 0.5f;
-                    game->stamina -= 0.25f;
+                    game->hunger += 0.85f;
+                    game->stamina -= 0.15f;
                     break;
                     
                 case 3:
                     msg = "You ate the " + getItemName() + ".";
-                    game->hunger += 0.75f;
+                    game->hunger += 1.0f;
                     break;
                     
                 case 4:
                     msg = "You ate the " + getItemName() + ". It is delicious!";
-                    game->hunger += 1.0f;
+                    game->hunger += 1.5f;
                     game->stamina += 0.1f;
                     break;
             }

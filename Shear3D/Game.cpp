@@ -14,7 +14,7 @@
 #include "tests.hpp"
 
 
-Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io), hunger(4.0f), stamina(4.0f), bedCounter(100.0f), jailDays(1), interacting(false), flipper(1.0f), interactingObject(nullptr), interactingMonster(nullptr) {
+Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false),  io(io) {
     init();
 }
 
@@ -53,6 +53,16 @@ void Game::init() {
     notifications.push_back(Notification("Story", "Your father just commited suicide after losing a bet worth of 1000 eggs with the local rich man.\nIt is now up to you to pay the debt.\nLuckily, you have a well which spurts infinite amount of gold coins at your backyard.\nWhen you get enough eggs, find the rich man,\nand fullfill your side of the deal!", false, -1.0f));
     io->WantSaveIniSettings = false;
     io->IniFilename = nullptr;
+    
+    stamina = 4.0f;
+    hunger = 4.0f;
+    bedCounter = 1.0f;
+    jailDays = 1;
+    escaping = false;
+    interacting = false;
+    flipper = 1.0f;
+    interactingObject = nullptr;
+    interactingMonster = nullptr;
 }
 
 void Game::clear() {
@@ -119,7 +129,7 @@ void Game::update() {
     }
     if (bedCounter < 0) {
         deltaTime *= sleepFlipper;
-        stamina += deltaTime * 0.1f;
+        stamina += deltaTime * 0.05f;
         hunger -= deltaTime * 0.03f;
         stamina = glm::min(4.0f, stamina);
         
@@ -133,6 +143,7 @@ void Game::update() {
         stamina -= deltaTime * 0.008f;
         hunger -= deltaTime * 0.02f;
     }
+    
     if (hunger > 5.5f) {
         hospital("You are way too full, your stomache bursted.");
     } else if (hunger < 0.0f) {
@@ -147,10 +158,19 @@ void Game::update() {
     float s = additiveTime * 0.02f;
     float standarized = sinf(s - 3.14159f / 2.0f) * 0.5f + 0.5f;
     
+    steakCounter -= deltaTime;
+    if (steakCounter < 0.0f) {
+        steaks++;
+        std::random_device dev;
+        std::uniform_real_distribution<> distrib(30.0f, 60.0f);
+        steakCounter = distrib(dev);
+    }
+    
     if (standarized < 0.1f && !dayLock) {
         day++;
         dayLock = true;
         notifications.push_back(Notification("A New Day", "A new day has begun. It is now day " + std::to_string(day) + ". ", true, 10.0f));
+        refresh();
     }
     if (standarized > 0.1f) {
         dayLock = false;
@@ -394,7 +414,7 @@ void Game::loadMap(std::string path) {
                     addObject(0, glm::vec3(x, 4.0f, z));
                     addObject(2, glm::vec3(x, 0.0f, z));
                     break;
-                    
+
                 case '.':
                     addObject(2, glm::vec3(x, 0.0f, z));
                     addObject(0, glm::vec3(x, 2.0f, z));
@@ -645,6 +665,7 @@ void Game::interact() {
     if (isMonster) {
         interactingMonster = &monsters[index];
         interactingMonsterRamp = monsters[index].destinationRamp;
+        interactingMonster->conversationId = 0;
     } else if (index >= 0) {
         interactingObject = &objects[index];
     }
@@ -759,23 +780,24 @@ void Game::renderGUI() {
         interactingObject->interact(this);
         interacting = true;
     } else {
-        flipper = 1.0f;
         interactingObject = nullptr;
     }
-    if (interactingMonster) {
+    if (interactingMonster && glm::distance(interactingMonster->position, camera.position) <= 4.0f) {
         interactingMonster->interact(this);
         interacting = true;
     } else {
-        flipper = 1.0f;
+        interactingMonster = nullptr;
     }
     if (!interactingObject && !interactingMonster) {
         interacting = false;
+        flipper = 1.0f;
     }
 //    ImGui::ShowDemoWindow();
 }
 
 void Game::jail(std::string reason) {
     day += jailDays;
+    refresh();
     std::string msg = reason + "\nYou were sent to prison for " + std::to_string(jailDays) + " days.\nThe policeman warns you if you break the law next time, it will be worse.";
     camera.position = glm::vec3(48, 0.3, 7);
     bedCounter = 0.0f;
@@ -802,6 +824,7 @@ void Game::jail(std::string reason) {
 
 void Game::hospital(std::string reason) {
     std::string msg = reason + "\nYou woke up in the hospital.\n";
+    refresh();
     std::uniform_int_distribution<> distrib(1, 10);
     std::random_device dev;
     int days = distrib(dev);
@@ -842,10 +865,38 @@ void Game::addItem(Item item) {
     for (int i = 0; i < items.size(); i++) {
         if (items[i].type == item.type) {
             items[i].quantity += item.quantity;
+            if (items[i].quantity <= 0) {
+                items.erase(items.begin() + i, items.begin() + i + 1);
+            }
             return;
         }
     }
-    items.push_back(item);
+    if (item.quantity > 0) {
+        items.push_back(item);
+    }
+}
+
+int Game::getQuantityOf(ItemType type) {
+    for (int i = 0; i < items.size(); i++) {
+        if (items[i].type == type) {
+            return items[i].quantity;
+        }
+    }
+    return 0;
+}
+
+void Game::refresh() {
+    std::random_device dev;
+    std::uniform_int_distribution<> distrib(1, 40);
+    std::uniform_real_distribution<> priceDistrib(1.0f, 15.0f);
+    eggCount = distrib(dev);
+    eggPrice = glm::round(eggCount * priceDistrib(dev));
+
+    distrib = std::uniform_int_distribution<>(20, 90);
+    priceDistrib = std::uniform_real_distribution<>(30.0f, 60.0f);
+    steakPrice = distrib(dev);
+    steaks = 0;
+    steakCounter = priceDistrib(dev);
 }
 
 

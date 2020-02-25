@@ -46,7 +46,9 @@ public:
     int id;
     std::vector<Object *> path;
     Ramp *destinationRamp;
+    int rampIndex;
     int pathIndex;
+    int conversationId;
 };
 
 #endif /* Monster_hpp */

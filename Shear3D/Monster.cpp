@@ -9,6 +9,9 @@
 #include "Monster.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "../Includes/imgui/imgui.h"
+#include "Game.hpp"
+#include "Item.hpp"
 
 
 Monster::Monster(Texture *tex, int id, glm::vec3 position, GLuint VAO) : texture(tex), id(id), position(position), destination(position), VAO(VAO), destinationRamp(nullptr), pathIndex(0) {
@@ -33,8 +36,10 @@ void Monster::update(float dt, float time, int day, std::vector<Object> &objects
         if (ramps[i].time >= time) {
             currentRamp = ramps[i];
             if (i <= 0) {
+                rampIndex = -1;
                 break;
             }
+            rampIndex = i - 1;
             prevRamp = &ramps[i - 1];
             break;
         }
@@ -134,8 +139,170 @@ Object *Monster::lookup(glm::vec3 pos, std::vector<Object> &objects) {
     return nullptr;
 }
 
-void Monster::interact(Game *game) { 
-    
+void Monster::interact(Game *game) {
+    game->escape(game->escaping = true);
+    ImGui::SetNextWindowSize(ImVec2{ 400.0f, 300.0f }, ImGuiCond_FirstUseEver);
+    ImGui::Begin("Dialogue");
+    switch (id) {
+        case 0:
+            switch (rampIndex) {
+                case 0:
+                    ImGui::Text("Zzz...");
+                    break;
+                    
+                case 1:
+                    switch (conversationId) {
+                        case 0:
+                            ImGui::Text("Just going out for a walk here.");
+                            if (ImGui::Button("Punch him in the face")) {
+                                std::random_device dev;
+                                std::uniform_int_distribution<> distrib(1, 2);
+                                conversationId = distrib(dev);
+                            }
+                            break;
+                            
+                        case 1:
+                            ImGui::Text("What the hell? Up yours, too!");
+                            break;
+                        
+                        case 2:
+                            ImGui::Text("POLICE! There's a maniac here punching people!");
+                            break;
+                    }
+                    break;
+                    
+                case 2:
+                    switch (conversationId) {
+                        case 0:
+                            ImGui::Text("Look at the store. Isn't it pretty?");
+                            if (ImGui::Button("Punch him in the face")) {
+                                std::random_device dev;
+                                std::uniform_int_distribution<> distrib(1, 2);
+                                conversationId = distrib(dev);
+                            }
+                            break;
+                            
+                        case 1:
+                            ImGui::Text("What the hell? Up yours, too!");
+                            break;
+                        
+                        case 2:
+                            ImGui::Text("POLICE! There's a maniac here punching people!");
+                            break;
+                    }
+                    break;
+                    
+                case 3:
+                    ImGui::Text("Hi there. I am preparing for the shop.");
+                    break;
+                    
+                case 4:
+                    if (game->steaks > 0) {
+                        bool canBuy = game->getQuantityOf(COIN) >= game->steakPrice;
+                        std::string msg = "Hello! We've got %d steaks now,\n and it costs %d each. Wanna have one?";
+                        if (!canBuy) {
+                            msg += "\nOh, but looks like you don't have enough coins...";
+                        }
+                        ImGui::Text(msg.c_str(), game->steaks, (int) game->steakPrice);
+                        if (canBuy && ImGui::Button("OK")) {
+                            game->addItem(Item(COIN, (int) -game->steakPrice));
+                            game->addItem(Item(STEAK, 1));
+                            game->steaks--;
+                        }
+                    } else {
+                        ImGui::Text("Sorry, we've got no steaks now. But we are cooking!");
+                    }
+                    
+                    break;
+            }
+            break;
+            
+        case 1:
+            switch (rampIndex) {
+                case 0:
+                    switch (conversationId) {
+                        case 0:
+                            ImGui::Text("What the hell are you doing in my room?");
+                            if (ImGui::Button("Just visiting around.")) {
+                                conversationId = 1;
+                            }
+                            break;
+
+                        case 1:
+                            ImGui::Text("POLICE!");
+                            break;
+                    }
+                    
+                    break;
+                    
+                case 1:
+                    ImGui::Text("Hello, this is my home and we are eating! Get out!");
+                    break;
+                    
+                case 2:
+                    ImGui::Text("Could you get out of my way?");
+                    break;
+                    
+                case 3:
+                    ImGui::Text("Where I am going to is none of your business.");
+                    break;
+                    
+                case 4:
+                    ImGui::Text("Go away.");
+                    break;
+                    
+                case 5:
+                    ImGui::Text("Could you get out of my way? Going to work here.");
+                    break;
+                    
+                case 6:
+                    switch (conversationId) {
+                        case 0:
+                        {
+                            if (game->eggCount > 0) {
+                                std::string say = "Got %d eggs today. Buy them all for just %d coins.\nTake it or leave it.";
+                                bool canBuy = game->getQuantityOf(COIN) >= game->eggPrice;
+                                if (!canBuy) {
+                                    say += "\nYou don't even have that much money!";
+                                }
+                                ImGui::Text(say.c_str(), game->eggCount, (int) game->eggPrice);
+                                if (canBuy && ImGui::Button("Purchase")) {
+                                    conversationId = 2;
+                                    game->addItem(Item(EGG, game->eggCount));
+                                    game->addItem(Item(COIN, -game->eggPrice));
+                                    game->eggCount = 0;
+                                }
+                            } else {
+                                ImGui::Text("No more eggs today. Bye!");
+                            }
+                            
+                            break;
+                        }
+                            
+                        case 2:
+                            ImGui::Text("OK. Now pack your shite and leave it!");
+                            break;
+                    }
+                    
+            }
+            break;
+            
+        default:
+            break;
+    }
+    if (ImGui::Button("Try to leave") || destinationRamp != game->interactingMonsterRamp) {
+        if (id == 1 && conversationId == 1) {
+            game->jail("You were found breaking into someone's house.");
+        }
+        if (id == 0 && conversationId == 1) {
+            game->hospital("You got punched straight in the face and lose conciousness.");
+        }
+        if (id == 0 && conversationId == 2) {
+            game->jail("You were found beating the chef up.");
+        }
+        game->interactingMonster = nullptr;
+    }
+    ImGui::End();
 }
 
 

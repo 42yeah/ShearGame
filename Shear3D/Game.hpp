@@ -68,6 +68,8 @@ private:
     void jail(std::string reason);
     void hospital(std::string reason);
     void addItem(Item item);
+    int getQuantityOf(ItemType type);
+    void refresh();
 
     // === PASSES === //
     Program renderProgram;
@@ -99,6 +101,11 @@ private:
     float bedCounter;
     int jailDays;
     float flipper;
+    int eggCount;
+    float eggPrice;
+    float steakPrice;
+    int steaks;
+    float steakCounter;
     
     // === LOW VALUES === //
     double time;
