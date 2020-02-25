@@ -65,8 +65,6 @@ void Game::init() {
     interactingMonster = nullptr;
     axed = false;
     rented = false;
-    
-    addItem(Item(COIN, 500));
 }
 
 void Game::clear() {
@@ -893,7 +891,7 @@ int Game::getQuantityOf(ItemType type) {
 void Game::refresh() {
     std::random_device dev;
     std::uniform_int_distribution<> distrib(1, 40);
-    std::uniform_real_distribution<> priceDistrib(1.0f, 15.0f);
+    std::uniform_real_distribution<> priceDistrib(1.0f, 5.0f);
     eggCount = distrib(dev);
     eggPrice = glm::round(eggCount * priceDistrib(dev));
 
