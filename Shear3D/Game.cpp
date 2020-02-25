@@ -14,7 +14,7 @@
 #include "tests.hpp"
 
 
-Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io), hunger(1.0f), stamina(1.0f) {
+Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io), hunger(4.0f), stamina(4.0f) {
     init();
 }
 
@@ -51,6 +51,8 @@ void Game::init() {
     loadMonsters("Assets/monsterlist");
     
     notifications.push_back(Notification{ "Story", "Your father just commited suicide after losing a bet worth of 1000 eggs with the local rich man.\nIt is now up to you to pay the debt.\nLuckily, you have a well which spurts infinite amount of gold coins at your backyard.\nWhen you get enough eggs, find the rich man,\nand fullfill your side of the deal!", false, -1.0f });
+    io->WantSaveIniSettings = false;
+    io->IniFilename = nullptr;
 }
 
 void Game::clear() {
@@ -105,13 +107,17 @@ void Game::update() {
     time = now;
     additiveTime += deltaTime;
     
+    // === GAME RELATED UPDATES === //
+    hunger -= deltaTime * 0.02f;
+    stamina -= deltaTime * 0.008f;
+    
     float s = additiveTime * 0.02f;
     float standarized = sinf(s - 3.14159f / 2.0f) * 0.5f + 0.5f;
     
     if (standarized < 0.1f && !dayLock) {
         day++;
         dayLock = true;
-        notifications.push_back(Notification{ "A New Day", "A new day has begun. It is now day " + std::to_string(day) + ". ", true, 3.0f });
+        notifications.push_back(Notification{ "A New Day", "A new day has begun. It is now day " + std::to_string(day) + ". ", true, 10.0f });
     }
     if (standarized > 0.1f) {
         dayLock = false;
@@ -160,6 +166,7 @@ void Game::update() {
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_K)) {
         std::cout << standarized << std::endl;
+        std::cout << hunger << ", " << stamina << std::endl;
     }
     
     // Collision check
@@ -556,7 +563,7 @@ void Game::interact() {
                       nCamPos.z < monsters[i].position.z - 0.5f ||
                       nCamPos.z > monsters[i].position.z + 0.5f ||
                       nCamPos.y < monsters[i].position.y ||
-                      nCamPos.y > monsters[i].position.y + 1.6f)) {
+                      nCamPos.y > monsters[i].position.y + 2.0f)) {
                     if (index == -1 || recordedDepth < depth) {
                         index = i;
                         isMonster = true;
@@ -586,13 +593,18 @@ void Game::escape(bool es) {
 
 void Game::renderGUI() {
     float y = 10.0f;
+    bool open = true;
     for (int i = 0; i < notifications.size(); i++) {
         Notification &notification = notifications[i];
         ImGui::SetNextWindowPos(ImVec2{ 10.0f, y });
-        ImGui::SetNextItemWidth(windowSize.x * 0.8f);
+#ifdef __APPLE__
+        ImGui::SetNextWindowSizeConstraints(ImVec2{ windowSize.x * 0.5f * 0.9f, 0.1f }, ImVec2{ windowSize.x * 0.5f * 0.9f, 200.0f });
+#else
+        ImGui::SetNextWindowSizeConstraints(ImVec2{ windowSize.x * 0.9f, 0.1f }, ImVec2{ windowSize.x * 0.9f, 200.0f });
+#endif
+
         bool shouldClose = false;
         if (notification.live) {
-            bool open = true;
             notification.aliveTime -= deltaTime;
             ImGui::Begin(notification.title.c_str(), &open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize);
             ImGui::Text("%s", notification.content.c_str());
@@ -610,5 +622,36 @@ void Game::renderGUI() {
         ImGui::End();
         y += size.y + 10.0f;
     }
+    ImGui::SetNextWindowPos(ImVec2{ 10.0f, y }, ImGuiCond_Always);
+#ifdef __APPLE__
+        ImGui::SetNextWindowSizeConstraints(ImVec2{ windowSize.x * 0.5f * 0.9f, 50.0f }, ImVec2{ windowSize.x * 0.5f * 0.9f, 200.0f });
+#else
+        ImGui::SetNextWindowSizeConstraints(ImVec2{ windowSize.x * 0.9f, 50.0f }, ImVec2{ windowSize.x * 0.9f, 200.0f });
+#endif
+    ImGui::Begin("Hungry", &open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize);
+    if (hunger < 0.125f) {
+        ImGui::Text("%s", "You are hungry as hell!");
+    } else if (hunger < 0.25f) {
+        ImGui::Text("%s", "Oh, you are famished!");
+    } else if (hunger < 0.5f) {
+        ImGui::Text("%s", "You need food, badly!");
+    } else if (hunger < 1.0f) {
+        ImGui::Text("%s", "You really need to eat something now.");
+    } else if (hunger < 2.0f) {
+        ImGui::Text("%s", "You are hungry.");
+    }
+    ImGui::SetNextItemWidth(windowSize.x * 0.8f);
+    if (stamina < 0.125f) {
+        ImGui::Text("You don't think you can move another muscle.");
+    } else if (stamina < 0.25f) {
+        ImGui::Text("Your eyes can't open.");
+    } else if (stamina < 0.5f) {
+        ImGui::Text("You are sleepy.");
+    } else if (stamina < 1.0f) {
+        ImGui::Text("You are really tired.");
+    } else if (stamina < 2.0f) {
+        ImGui::Text("You are tired.");
+    }
+    ImGui::End();
 //    ImGui::ShowDemoWindow();
 }
