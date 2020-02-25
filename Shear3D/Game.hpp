@@ -93,6 +93,7 @@ private:
     Monster *interactingMonster;
     Ramp *interactingMonsterRamp;
     float bedCounter;
+    int jailDays;
     
     // === LOW VALUES === //
     double time;

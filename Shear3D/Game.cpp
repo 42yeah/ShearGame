@@ -14,7 +14,7 @@
 #include "tests.hpp"
 
 
-Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io), hunger(4.0f), stamina(2.0f), bedCounter(100.0f) {
+Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io), hunger(4.0f), stamina(2.0f), bedCounter(100.0f), jailDays(1) {
     init();
 }
 
@@ -124,6 +124,16 @@ void Game::update() {
         stamina += deltaTime * 0.1f;
         hunger -= deltaTime * 0.03f;
         stamina = glm::min(4.0f, stamina);
+        
+        for (int i = 0; i < monsters.size(); i++) {
+            if (glm::distance(monsters[i].position, camera.position) <= 3.0f) {
+                day += jailDays;
+                notifications.push_back(Notification("Jail", "You were found sleeping in someone else's bed.\nYou were sent to prison for " + std::to_string(jailDays) + " days.\nThe policeman warns you if you break the law next time, it will be worse.", false, -1.0f));
+                camera.position = glm::vec3(48, 0.3, 7);
+                bedCounter = 0.0f;
+                break;
+            }
+        }
     } else {
         stamina -= deltaTime * 0.008f;
         hunger -= deltaTime * 0.02f;
@@ -174,25 +184,25 @@ void Game::update() {
     glm::vec3 oldCameraPos = camera.position; // For collision detection
     f = glm::normalize(f);
     if (glfwGetKey(nativeWindow, GLFW_KEY_W)) {
-        if (state == SLEEPING) {
+        if (bedCounter < 0.0f) {
             deltaTime /= sleepFlipper;
         }
         camera.position += f * deltaTime * 4.0f;
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_A)) {
-        if (state == SLEEPING) {
+        if (bedCounter < 0.0f) {
             deltaTime /= sleepFlipper;
         }
         camera.position -= glm::cross(f, camera.up) * deltaTime * 4.0f;
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_S)) {
-        if (state == SLEEPING) {
+        if (bedCounter < 0.0f) {
             deltaTime /= sleepFlipper;
         }
         camera.position -= f * deltaTime * 4.0f;
     }
     if (glfwGetKey(nativeWindow, GLFW_KEY_D)) {
-        if (state == SLEEPING) {
+        if (bedCounter < 0.0f) {
             deltaTime /= sleepFlipper;
         }
         camera.position += glm::cross(f, camera.up) * deltaTime * 4.0f;
@@ -200,6 +210,8 @@ void Game::update() {
     if (glfwGetKey(nativeWindow, GLFW_KEY_K)) {
         std::cout << standarized << std::endl;
         std::cout << hunger << ", " << stamina << std::endl;
+        glm::vec3 rounded = glm::round(camera.position);
+        std::cout << rounded.x << ", " << rounded.y << ", " << rounded.z << std::endl;
     }
     
     // Collision check
@@ -739,5 +751,5 @@ void Game::renderGUI() {
 
 int distrib = 0;
 
-Notification::Notification(std::string title, std::string content, bool live, float aliveTime) : title(title + std::to_string(distrib++)), content(content), live(live), aliveTime(aliveTime) {
+Notification::Notification(std::string title, std::string content, bool live, float aliveTime) : title(title + (live ? std::to_string(distrib++) : "")), content(content), live(live), aliveTime(aliveTime) {
 }
