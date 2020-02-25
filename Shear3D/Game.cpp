@@ -14,7 +14,7 @@
 #include "tests.hpp"
 
 
-Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io) {
+Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io), hunger(1.0f), stamina(1.0f) {
     init();
 }
 
@@ -49,6 +49,8 @@ void Game::init() {
     loadMap("Assets/map");
     monsterTexture = Texture("Assets/Monsters/Monsters.png", RGBA);
     loadMonsters("Assets/monsterlist");
+    
+    notifications.push_back(Notification{ "Story", "Your father just commited suicide after losing a bet worth of 1000 eggs with the local rich man.\nIt is now up to you to pay the debt.\nLuckily, you have a well which spurts infinite amount of gold coins at your backyard.\nWhen you get enough eggs, find the rich man,\nand fullfill your side of the deal!", false, -1.0f });
 }
 
 void Game::clear() {
@@ -109,7 +111,7 @@ void Game::update() {
     if (standarized < 0.1f && !dayLock) {
         day++;
         dayLock = true;
-        std::cout << "A new day has begun." << std::endl;
+        notifications.push_back(Notification{ "A New Day", "A new day has begun. It is now day " + std::to_string(day) + ". ", true, 3.0f });
     }
     if (standarized > 0.1f) {
         dayLock = false;
@@ -136,7 +138,6 @@ void Game::update() {
             tabPressed = true;
             escaping = !escaping;
             escape(escaping);
-            std::cout << "Escaping is now " << escaping << std::endl;
         }
     } else {
         tabPressed = false;
@@ -584,9 +585,30 @@ void Game::escape(bool es) {
 }
 
 void Game::renderGUI() {
-    ImGui::SetNextWindowPos(ImVec2{ 10, 10 });
-    ImGui::Begin("Story");
-    ImGui::Text("Your father just commited suicide after losing a bet worth of 1000 eggs with the local rich man.\nIt is now up to you to pay the debt.\nLuckily, you have a well which spurts infinite amount of gold coins at your backyard.\nWhen you get enough eggs, find the rich man,\nand fullfill your side of the deal!");
-    ImGui::Button("Dismiss");
-    ImGui::End();
+    float y = 10.0f;
+    for (int i = 0; i < notifications.size(); i++) {
+        Notification &notification = notifications[i];
+        ImGui::SetNextWindowPos(ImVec2{ 10.0f, y });
+        ImGui::SetNextItemWidth(windowSize.x * 0.8f);
+        bool shouldClose = false;
+        if (notification.live) {
+            bool open = true;
+            notification.aliveTime -= deltaTime;
+            ImGui::Begin(notification.title.c_str(), &open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize);
+            ImGui::Text("%s", notification.content.c_str());
+            shouldClose = notification.aliveTime < 0.0f;
+        } else {
+            ImGui::Begin(notification.title.c_str());
+            ImGui::Text("%s", notification.content.c_str());
+            shouldClose = ImGui::Button("Dismiss");
+        }
+        if (shouldClose) {
+            notifications.erase(notifications.begin() + i, notifications.begin() + i + 1);
+            i--;
+        }
+        ImVec2 size = ImGui::GetWindowSize();
+        ImGui::End();
+        y += size.y + 10.0f;
+    }
+//    ImGui::ShowDemoWindow();
 }

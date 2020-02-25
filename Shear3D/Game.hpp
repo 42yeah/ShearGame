@@ -21,6 +21,13 @@
 #include "../Includes/imgui/imgui.h"
 
 
+struct Notification {
+    std::string title;
+    std::string content;
+    bool live;
+    float aliveTime;
+};
+
 /**
  A game instance that is deeply coupled with GLFW,
  becaused I am too lazy.
@@ -68,6 +75,10 @@ private:
     glm::vec3 sunColor;
     int day;
     
+    // === GAME VALUES === //
+    float hunger;
+    float stamina;
+    
     // === LOW VALUES === //
     double time;
     bool reloadKeyPressed;
@@ -78,7 +89,7 @@ private:
     bool dayLock;
     bool escaping;
     ImGuiIO *io;
-    std::vector<std::string> notifications;
+    std::vector<Notification> notifications;
 
     bool tabPressed;
 };
