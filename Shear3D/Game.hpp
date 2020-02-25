@@ -18,10 +18,17 @@
 #include "Model.hpp"
 #include "Object.hpp"
 #include "Monster.hpp"
+#include "Item.hpp"
 #include "../Includes/imgui/imgui.h"
 
 
+enum CharacterState {
+    NORMAL, SITTING, SLEEPING
+};
+
 struct Notification {
+    Notification(std::string title, std::string content, bool live, float aliveTime);
+
     std::string title;
     std::string content;
     bool live;
@@ -47,6 +54,9 @@ public:
     void escape(bool es);
     
 private:
+    friend class Item;
+    friend class Object;
+    friend class Monster;
     void updateWindowSize();
     GLuint genereateGround();
     GLuint generateMonsterRect();
@@ -78,6 +88,11 @@ private:
     // === GAME VALUES === //
     float hunger;
     float stamina;
+    CharacterState state;
+    Object *interactingObject;
+    Monster *interactingMonster;
+    Ramp *interactingMonsterRamp;
+    float bedCounter;
     
     // === LOW VALUES === //
     double time;
@@ -90,6 +105,7 @@ private:
     bool escaping;
     ImGuiIO *io;
     std::vector<Notification> notifications;
+    std::vector<Item> items;
 
     bool tabPressed;
 };

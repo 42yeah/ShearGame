@@ -16,6 +16,8 @@
 #include "Object.hpp"
 
 
+class Game;
+
 struct Ramp {
     float time;
     glm::vec3 destination;
@@ -32,6 +34,8 @@ public:
     Object *lookup(glm::vec3 pos, std::vector<Object> &objects);
 
     void render(Program &program);
+    
+    void interact(Game *game);
 
     std::vector<Ramp> ramps;
     glm::vec3 position;

@@ -14,7 +14,7 @@
 #include "tests.hpp"
 
 
-Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io), hunger(4.0f), stamina(4.0f) {
+Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false), escaping(false), io(io), hunger(4.0f), stamina(2.0f), bedCounter(100.0f) {
     init();
 }
 
@@ -37,7 +37,7 @@ void Game::init() {
     renderProgram = Program("Assets/default.vertex.glsl", "Assets/default.fragment.glsl");
     monsterProgram = Program("Assets/monster.vertex.glsl", "Assets/monster.fragment.glsl");
     postEffectProgram = Program("Assets/posteffect.vertex.glsl", "Assets/posteffect.fragment.glsl");
-    camera = Camera(glm::vec3(4.0, 1.45f, 9.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    camera = Camera(glm::vec3(3.0, 1.45f, 9.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     time = glfwGetTime();
     deltaTime = 0.0f;
@@ -50,9 +50,13 @@ void Game::init() {
     monsterTexture = Texture("Assets/Monsters/Monsters.png", RGBA);
     loadMonsters("Assets/monsterlist");
     
-    notifications.push_back(Notification{ "Story", "Your father just commited suicide after losing a bet worth of 1000 eggs with the local rich man.\nIt is now up to you to pay the debt.\nLuckily, you have a well which spurts infinite amount of gold coins at your backyard.\nWhen you get enough eggs, find the rich man,\nand fullfill your side of the deal!", false, -1.0f });
+    notifications.push_back(Notification("Story", "Your father just commited suicide after losing a bet worth of 1000 eggs with the local rich man.\nIt is now up to you to pay the debt.\nLuckily, you have a well which spurts infinite amount of gold coins at your backyard.\nWhen you get enough eggs, find the rich man,\nand fullfill your side of the deal!", false, -1.0f));
     io->WantSaveIniSettings = false;
     io->IniFilename = nullptr;
+    
+    items.push_back(Item(STEAK, 3));
+    items.push_back(Item(EGG, 500));
+    items.push_back(Item(COIN, 25));
 }
 
 void Game::clear() {
@@ -95,6 +99,7 @@ void Game::render() {
     glClear(GL_COLOR_BUFFER_BIT);
     postEffectProgram.use();
     glUniform1f(postEffectProgram.loc("aspect"), aspect);
+    glUniform1f(postEffectProgram.loc("bedCounter"), bedCounter);
     renderPass.pass(postEffectProgram.loc("tex"), 0);
     glBindVertexArray(rect);
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -104,12 +109,27 @@ void Game::update() {
     updateWindowSize();
     double now = glfwGetTime();
     deltaTime = (float) now - time;
-    time = now;
-    additiveTime += deltaTime;
     
     // === GAME RELATED UPDATES === //
-    hunger -= deltaTime * 0.02f;
-    stamina -= deltaTime * 0.008f;
+    if (state == SLEEPING) {
+        bedCounter -= deltaTime * 0.2f;
+        bedCounter = glm::max(-1.0f, bedCounter);
+    } else {
+        bedCounter += deltaTime * 3.0f;
+        bedCounter = glm::min(1.0f, bedCounter);
+    }
+    if (bedCounter < 0) {
+        deltaTime *= 10.0;
+        stamina += deltaTime * 0.1f;
+        hunger -= deltaTime * 0.03f;
+        stamina = glm::min(4.0f, stamina);
+    } else {
+        stamina -= deltaTime * 0.008f;
+        hunger -= deltaTime * 0.02f;
+    }
+    
+    time = now;
+    additiveTime += deltaTime;
     
     float s = additiveTime * 0.02f;
     float standarized = sinf(s - 3.14159f / 2.0f) * 0.5f + 0.5f;
@@ -117,7 +137,7 @@ void Game::update() {
     if (standarized < 0.1f && !dayLock) {
         day++;
         dayLock = true;
-        notifications.push_back(Notification{ "A New Day", "A new day has begun. It is now day " + std::to_string(day) + ". ", true, 10.0f });
+        notifications.push_back(Notification("A New Day", "A new day has begun. It is now day " + std::to_string(day) + ". ", true, 10.0f));
     }
     if (standarized > 0.1f) {
         dayLock = false;
@@ -200,10 +220,12 @@ void Game::update() {
             switch (objects[i].type) {
                 case SLEEPABLE:
                     desired = 1.75f;
+                    state = SLEEPING;
                     break;
 
                 case SITTABLE:
                     desired = 1.95f;
+                    state = SITTING;
                     break;
 
                 default:
@@ -217,12 +239,20 @@ void Game::update() {
         }
     }
     if (!stat) {
+        state = NORMAL;
         float dy = 1.45f - camera.position.y;
         camera.position.y += dy * 4.0f * deltaTime;
     }
 
     for (int i = 0; i < monsters.size(); i++) {
         monsters[i].update(deltaTime, standarized, day, objects);
+    }
+    
+    if (interactingObject && glm::distance(interactingObject->pos, camera.position) <= 4.0f) {
+        interactingObject->interact(this);
+    }
+    if (interactingMonster) {
+        interactingMonster->interact(this);
     }
 }
 
@@ -575,12 +605,15 @@ void Game::interact() {
         }
         depth += closest / 5.0f;
     }
+    interactingObject = nullptr;
+    interactingMonster = nullptr;
+    interactingMonsterRamp = nullptr;
     if (isMonster) {
-        std::cout << "Monster selected: " << index << std::endl;
-    } else {
-        std::cout << "Object selected: " << index << std::endl;
+        interactingMonster = &monsters[index];
+        interactingMonsterRamp = monsters[index].destinationRamp;
+    } else if (index >= 0) {
+        interactingObject = &objects[index];
     }
-//    std::cout << index << std::endl;
 }
 
 void Game::escape(bool es) {
@@ -606,7 +639,7 @@ void Game::renderGUI() {
         bool shouldClose = false;
         if (notification.live) {
             notification.aliveTime -= deltaTime;
-            ImGui::Begin(notification.title.c_str(), &open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize);
+            ImGui::Begin(notification.title.c_str(), &open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
             ImGui::Text("%s", notification.content.c_str());
             shouldClose = notification.aliveTime < 0.0f;
         } else {
@@ -628,19 +661,24 @@ void Game::renderGUI() {
 #else
         ImGui::SetNextWindowSizeConstraints(ImVec2{ windowSize.x * 0.9f, 50.0f }, ImVec2{ windowSize.x * 0.9f, 200.0f });
 #endif
-    ImGui::Begin("Hungry", &open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize);
+    ImGui::Begin("Hungry", &open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
     if (hunger < 0.125f) {
-        ImGui::Text("%s", "You are hungry as hell!");
+        ImGui::Text("You are hungry as hell!");
     } else if (hunger < 0.25f) {
-        ImGui::Text("%s", "Oh, you are famished!");
+        ImGui::Text("Oh, you are famished!");
     } else if (hunger < 0.5f) {
-        ImGui::Text("%s", "You need food, badly!");
+        ImGui::Text("You need food, badly!");
     } else if (hunger < 1.0f) {
-        ImGui::Text("%s", "You really need to eat something now.");
+        ImGui::Text("You really need to eat something now.");
     } else if (hunger < 2.0f) {
-        ImGui::Text("%s", "You are hungry.");
+        ImGui::Text("You are hungry.");
+    } else if (hunger > 5.0f) {
+        ImGui::Text("You are about to burst!");
+    } else if (hunger > 4.5f) {
+        ImGui::Text("You are so full. You gotta stop eating.");
+    } else if (hunger > 4.0f) {
+        ImGui::Text("You are starting to feel full.");
     }
-    ImGui::SetNextItemWidth(windowSize.x * 0.8f);
     if (stamina < 0.125f) {
         ImGui::Text("You don't think you can move another muscle.");
     } else if (stamina < 0.25f) {
@@ -652,6 +690,41 @@ void Game::renderGUI() {
     } else if (stamina < 2.0f) {
         ImGui::Text("You are tired.");
     }
+    if (state == SLEEPING) {
+        if (bedCounter >= 0.0f) {
+            ImGui::Text("You are lying on bed. A short while later you will fall asleep.\nMove away from the bed to wake up.");
+        } else {
+            ImGui::Text("Zzz...");
+        }
+    }
     ImGui::End();
+    
+    if (escaping) {
+        // Render the inventory
+#ifdef __APPLE__
+        ImGui::SetNextWindowPos(ImVec2{ windowSize.x * 0.5f - 310.0f, windowSize.y * 0.5f - 110.0f }, ImGuiCond_FirstUseEver);
+#else
+        ImGui::SetNextWindowPos(ImVec2{ windowSize.x - 310.0f, windowSize.y - 110.0f }, ImGuiCond_FirstUseEver);
+#endif
+        
+        ImGui::SetNextWindowSize(ImVec2{ 300.0f, 100.0f }, ImGuiCond_FirstUseEver);
+        ImGui::Begin("Inventory");
+        for (int i = 0; i < items.size(); i++) {
+            if (ImGui::Button(items[i].getItemName(true).c_str())) {
+                items[i].invoke(this);
+                if (items[i].quantity <= 0) {
+                    items.erase(items.begin() + i, items.begin() + i + 1);
+                    i--;
+                }
+            }
+        }
+        ImGui::End();
+    }
 //    ImGui::ShowDemoWindow();
+}
+
+
+int distrib = 0;
+
+Notification::Notification(std::string title, std::string content, bool live, float aliveTime) : title(title + std::to_string(distrib++)), content(content), live(live), aliveTime(aliveTime) {
 }

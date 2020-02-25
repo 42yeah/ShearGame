@@ -134,6 +134,11 @@ Object *Monster::lookup(glm::vec3 pos, std::vector<Object> &objects) {
     return nullptr;
 }
 
+void Monster::interact(Game *game) { 
+    
+}
+
+
 
 
 

@@ -26,6 +26,7 @@
 		F1EFEFA32404227F008AB6F4 /* imgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1EFEED724041E2B008AB6F4 /* imgui.cpp */; };
 		F1EFEFA42404227F008AB6F4 /* imgui_demo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1EFEF9324041E2B008AB6F4 /* imgui_demo.cpp */; };
 		F1EFEFA52404227F008AB6F4 /* imgui_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1EFEF9424041E2B008AB6F4 /* imgui_draw.cpp */; };
+		F1EFEFAB240506E4008AB6F4 /* Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F1EFEFA9240506E4008AB6F4 /* Item.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -288,6 +289,8 @@
 		F1EFEF9324041E2B008AB6F4 /* imgui_demo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_demo.cpp; sourceTree = "<group>"; };
 		F1EFEF9424041E2B008AB6F4 /* imgui_draw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_draw.cpp; sourceTree = "<group>"; };
 		F1EFEFA624042A60008AB6F4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F1EFEFA9240506E4008AB6F4 /* Item.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Item.cpp; sourceTree = "<group>"; };
+		F1EFEFAA240506E4008AB6F4 /* Item.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Item.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -345,6 +348,8 @@
 				F106C0C423FED3B400320ED8 /* Object.hpp */,
 				F106C0CB240034A000320ED8 /* Monster.cpp */,
 				F106C0CC240034A000320ED8 /* Monster.hpp */,
+				F1EFEFA9240506E4008AB6F4 /* Item.cpp */,
+				F1EFEFAA240506E4008AB6F4 /* Item.hpp */,
 			);
 			path = Shear3D;
 			sourceTree = "<group>";
@@ -1058,6 +1063,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1EFEFAB240506E4008AB6F4 /* Item.cpp in Sources */,
 				F1EFEFA22404227F008AB6F4 /* imgui_widgets.cpp in Sources */,
 				F1EFEFA32404227F008AB6F4 /* imgui.cpp in Sources */,
 				F1EFEFA42404227F008AB6F4 /* imgui_demo.cpp in Sources */,

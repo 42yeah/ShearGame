@@ -4,6 +4,7 @@ in vec2 uv;
 
 uniform sampler2D tex;
 uniform float aspect;
+uniform float bedCounter;
 
 out vec4 color;
 
@@ -26,5 +27,10 @@ void main() {
     vec3 texColor = texture(tex, u).rgb;
     
     color = vec4(dottify(gamma(texColor)), 1.0);
+    
+    u = -1.0 + 2.0 * u;
+    float bc = (1.0 - max(0.0, min(1.0, bedCounter))) * 10.0;
+    float dCenter = 1.0 - abs(u.y) * bc;
+    color.rgb *= dCenter * max(0.0, min(1.0, bedCounter));
 //    color = texture(shadow, u);
 }

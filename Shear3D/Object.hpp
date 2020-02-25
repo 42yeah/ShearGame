@@ -13,6 +13,8 @@
 #include "Model.hpp"
 
 
+class Game;
+
 enum ObjectType {
     PASSABLE, OBSTACLE, SITTABLE, SLEEPABLE
 };
@@ -23,6 +25,8 @@ public:
     Object(glm::vec3 pos, Model *model, glm::mat4 modelMat, ObjectType type);
     
     void render(Program &program);
+    
+    void interact(Game *game);
 
     glm::vec3 pos;
     glm::mat4 modelMat;

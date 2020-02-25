@@ -35,3 +35,8 @@ void Object::render(Program &program) {
     model->render(program);
 }
 
+void Object::interact(Game *game) { 
+    
+}
+
+
