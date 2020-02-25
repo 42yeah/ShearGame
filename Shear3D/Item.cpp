@@ -51,6 +51,10 @@ std::string Item::getItemName(bool includesQuantity) {
         case TACO:
             ret = "taco";
             break;
+            
+        case ROTTEN_TACO:
+            ret = "rotten taco";
+            break;
     }
     if (includesQuantity) {
         ret += " x" + std::to_string(quantity);
@@ -134,7 +138,6 @@ void Item::invoke(Game *game) {
             
         case AXE:
             quantity--;
-            game->hunger -= 10.0f;
             game->stamina -= 10.0f;
             game->notifications.push_back(Notification("Item used", "You ate the axe. IT HURTS LIKE HELL!\nOh no! The axe head is poking out of your stomach!", true, 10.0f));
             break;
@@ -143,12 +146,27 @@ void Item::invoke(Game *game) {
             quantity--;
             game->hunger += 1.0f;
             game->stamina += 0.5f;
-            game->notifications.push_back(Notification("Item used", "You ate the taco. It's pretty standard.", true, 10.0f));
+            msg = "You ate the taco. It's pretty standard.";
             if (game->state != SITTING) {
                 msg += "\nHowever, you ate without chair. That's VERY uncomfortable.";
                 game->stamina -= 0.8f;
                 game->hunger -= 0.3f;
             }
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
+            break;
+            
+        case ROTTEN_TACO:
+            quantity--;
+            game->hunger += 0.03f;
+            game->stamina -= 3.0f;
+            msg = "You ate the rotten taco.\nYou feel a strong urge to throw up.";
+            if (game->state == SITTING) {
+                msg += "\nBut you managed to hold them back.";
+            } else {
+                game->hunger -= 2.0f;
+                msg += "\nYou threw up big time!";
+            }
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
             break;
     }
 }

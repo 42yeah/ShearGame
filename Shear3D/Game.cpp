@@ -904,6 +904,12 @@ void Game::refresh() {
     steakCounter = priceDistrib(dev);
     
     rented = false;
+    int numTacos = getQuantityOf(TACO);
+    if (numTacos > 0) {
+        notifications.push_back(Notification("Rots", "The tacos rot.", true, 10.0f));
+        addItem(Item(TACO, -numTacos));
+        addItem(Item(ROTTEN_TACO, numTacos));
+    }
 }
 
 
