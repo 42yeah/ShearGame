@@ -4,6 +4,8 @@ __WARNING: slight swears are present in this game!__
 
 ![Partially eaten lavish meal!](./partially.eaten.lavish.meal.png)
 
+(See, this is what happens when you punch the rich man in the face when he's eating!)
+
 Shear 3D is  the remake of ShearGame, a game which I made long before. It's like the first game I've ever made. It utilizes ImGui!
 
 And now because of the incoming 7DRL practicing and other reasons, I am remaking it out of nostalgia, or whatever reasons. Play it at your own risk!
