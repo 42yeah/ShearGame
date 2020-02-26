@@ -820,6 +820,30 @@ void Monster::interact(Game *game) {
             }
             break;
             
+        case 8:
+            switch (rampIndex) {
+                case 0:
+                    ImGui::Text("Zzz...");
+                    break;
+                    
+                case 1:
+                    ImGui::Text("Dang, do the laundry, man!");
+                    break;
+                    
+                case 2:
+                    ImGui::Text("God is it lovely out.");
+                    break;
+                    
+                case 3:
+                    ImGui::Text("Dang, those tacos go bad again.\nAaaagh, I don't want to walk that far!");
+                    break;
+            }
+            break;
+            
+        case 9:
+            
+            break;
+            
         default:
             break;
     }
