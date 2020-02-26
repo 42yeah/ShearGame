@@ -65,9 +65,6 @@ void Game::init() {
     interactingMonster = nullptr;
     axed = false;
     rented = false;
-    
-    addItem(Item(COIN, 500));
-    addItem(Item(AXE, 1));
 }
 
 void Game::clear() {
