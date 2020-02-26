@@ -5,7 +5,11 @@ project(Shear3D)
 set(CMAKE_CXX_FLAGS --std=c++11)
 
 # Gotta find GLFW first
-find_package(glfw3 3.2 REQUIRED)
+# find_package(glfw3 3.2 REQUIRED)
+
+add_subdirectory(Includes/glfw)
+
+add_subdirectory(Includes/glm)
 
 # Then make imgui
 add_subdirectory(Includes/imgui)
