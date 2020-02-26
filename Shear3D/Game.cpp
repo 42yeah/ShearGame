@@ -65,6 +65,9 @@ void Game::init() {
     interactingMonster = nullptr;
     axed = false;
     rented = false;
+    
+    addItem(Item(COIN, 500));
+    addItem(Item(AXE, 1));
 }
 
 void Game::clear() {
@@ -242,7 +245,7 @@ void Game::update() {
     float objWidth = 0.55f;
     glm::vec3 newCameraPos = camera.position;
     for (int i = 0; i < objects.size(); i++) {
-        if (objects[i].type != OBSTACLE || objects[i].pos.y != 0 || glm::distance(objects[i].pos, camera.position) > 4.0f) {
+        if (objects[i].type != OBSTACLE || objects[i].destroyed || objects[i].pos.y != 0 || glm::distance(objects[i].pos, camera.position) > 4.0f) {
 //            std::cout << desired << std::endl;
             continue;
         }
@@ -261,7 +264,7 @@ void Game::update() {
     bool stat = false;
     objWidth = 0.5f;
     for (int i = 0; i < objects.size(); i++) {
-        if (objects[i].type == PASSABLE || objects[i].type == OBSTACLE || objects[i].pos.y != 0 || glm::distance(objects[i].pos, camera.position) > 4.0f) {
+        if (objects[i].type == PASSABLE || objects[i].type == OBSTACLE || objects[i].destroyed || objects[i].pos.y != 0 || glm::distance(objects[i].pos, camera.position) > 4.0f) {
             continue;
         }
         if (collides(oldCameraPos, objects[i].pos, objWidth)) {
@@ -566,6 +569,10 @@ void Game::addObject(int id, glm::vec3 pos, float rotY) {
             obsType = WELL;
             break;
             
+        case 5:
+            obsType = TREE;
+            break;
+            
         case 7:
             obsType = CHEST;
             break;
@@ -601,7 +608,6 @@ void Game::loadMonsters(std::string path) {
                 monsters[index].ramps.push_back(Ramp{ time, glm::vec3(x, y, z) });
                 break;
         }
-        
     }
 }
 
@@ -622,6 +628,9 @@ void Game::interact() {
         float closest = 10000.0f;
         glm::vec3 nCamPos = camera.position + depth * camera.front;
         for (int i = 0; i < objects.size(); i++) {
+            if (objects[i].destroyed) {
+                continue;
+            }
             float dst = glm::distance(nCamPos, objects[i].pos);
             if (dst < closest) {
                 closest = dst;

@@ -55,6 +55,10 @@ std::string Item::getItemName(bool includesQuantity) {
         case ROTTEN_TACO:
             ret = "rotten taco";
             break;
+            
+        case LOG:
+            ret = "log";
+            break;
     }
     if (includesQuantity) {
         ret += " x" + std::to_string(quantity);
@@ -166,6 +170,15 @@ void Item::invoke(Game *game) {
                 game->hunger -= 2.0f;
                 msg += "\nYou threw up big time!";
             }
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
+            break;
+            
+        case LOG:
+            quantity--;
+            game->hunger += 0.01f;
+            game->stamina -= 3.5f;
+            game->additiveTime += 20.0f;
+            msg = "You ate the log. Chewing on it is extremely hard, and it cost you much time.";
             game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
             break;
     }

@@ -385,7 +385,7 @@ void Monster::interact(Game *game) {
                     switch (conversationId) {
                         case 0:
                         {
-                            int price = 400;
+                            int price = 450;
                             bool affordable = price <= game->getQuantityOf(COIN);
                             if (affordable && !game->axed) {
                                 ImGui::Text("Hey, look, I have a spare axe and I am looking to sell it.\nDo you wanna buy? This is just between you and me.");

@@ -20,7 +20,7 @@ enum ObjectType {
 };
 
 enum ObstacleType {
-    NOPE, CHEST, WELL
+    NOPE, CHEST, WELL, TREE
 };
 
 class Object {
@@ -41,6 +41,8 @@ public:
     float depth;
     
     int wellCounter;
+    int falls;
+    bool destroyed;
 };
 
 #endif /* Object_hpp */
