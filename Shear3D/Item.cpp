@@ -62,6 +62,11 @@ std::string Item::getItemName(bool includesQuantity) {
             
         case ROD:
             ret = "fishing rod";
+            break;
+            
+        case GOLDEN_FISHING_TROPHY:
+            ret = "+golden fishing trophy+";
+            break;
     }
     if (includesQuantity) {
         ret += " x" + std::to_string(quantity);
@@ -193,6 +198,15 @@ void Item::invoke(Game *game) {
             game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
             game->latched = true;
             break;
+            
+        case GOLDEN_FISHING_TROPHY:
+            quantity--;
+            game->hunger += 0.5f;
+            game->stamina -= 4.0f;
+            msg = "You ate the golden fishing trophy. It's too big! You can't swallow! Feck!";
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
+            game->goldenLatched = 1000;
+            break;
     }
     if (game->latched) {
         distrib = std::uniform_int_distribution<>(1, 2);
@@ -200,11 +214,21 @@ void Item::invoke(Game *game) {
         switch (outcome) {
             case 2:
                 game->hunger -= 2.0f;
-                game->notifications.push_back(Notification("The latching fishing rod makes food come back!\nYou throw up.", msg, true, 10.0f));
+                game->notifications.push_back(Notification("The latching rod", "The latching fishing rod makes food come back!\nYou throw up.", true, 10.0f));
                 break;
                 
             default:
                 break;
+        }
+    }
+    if (game->goldenLatched > 0 && type != GOLDEN_FISHING_TROPHY) {
+        distrib = std::uniform_int_distribution<>(0, game->goldenLatched);
+        outcome = distrib(dev);
+        if (outcome > 0) {
+            game->hunger -= 1.0f;
+            game->notifications.push_back(Notification("The latching golden trophy", "You gag and vomit.\nSome golden stuffs mixed with vomits came back up.\nApparently, your body cannot digest gold.\nAt least you can treat them like coins!", true, 10.0f));
+            game->goldenLatched -= outcome;
+            game->addItem(Item(COIN, outcome));
         }
     }
 }

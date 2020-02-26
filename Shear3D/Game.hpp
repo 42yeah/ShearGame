@@ -111,6 +111,7 @@ private:
     int rodDay;
     bool rented;
     bool latched;
+    int goldenLatched;
     
     // === LOW VALUES === //
     double time;

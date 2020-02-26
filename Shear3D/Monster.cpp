@@ -714,7 +714,17 @@ void Monster::interact(Game *game) {
                     
                 case 3:
                 {
-                    if (game->rodDay == -1) {
+                    if (game->rodDay == -2) {
+                        switch (conversationId) {
+                            case 0:
+                                ImGui::Text("Hi there! Wanna fish together?");
+                                break;
+                                
+                            case 2:
+                                ImGui::Text("Here, take this.\nThis is the first fishing trophy I got in my life.\nIt is made of pure gold! Fish more, so you can participate in competitions too!");
+                                break;
+                        }
+                    } else if (game->rodDay == -1) {
                         switch (conversationId) {
                             case 0:
                                 ImGui::Text("Hey! Do you want to learn fishin' too?");
@@ -732,10 +742,33 @@ void Monster::interact(Game *game) {
                                 ImGui::Text("Well, suit yourself.");
                                 break;
                         }
+                    } else if (game->rodDay != -1 && game->day - game->rodDay <= 31 && (game->getQuantityOf(FISH) >= 1 || game->getQuantityOf(RADIOACTIVE_FISH) >= 1)) {
+                        std::string msg = "Wow, you got the fish within a month!\nThat's impressive!";
+                        if (game->getQuantityOf(FISH) <= 0) {
+                            msg += " Why is that fish glowing though?";
+                        }
+                        msg += "\nAnyway, your reward!";
+                        ImGui::Text("%s", msg.c_str());
+                        if (ImGui::Button("*Give him the fish.*")) {
+                            game->rodDay = -2;
+                            if (game->getQuantityOf(FISH) <= 0) {
+                                game->addItem(Item(RADIOACTIVE_FISH, -1));
+                            } else {
+                                game->addItem(Item(FISH, -1));
+                            }
+                            game->addItem(Item(GOLDEN_FISHING_TROPHY, 1));
+                            conversationId = 2;
+                        }
+                    } else if (game->rodDay != -1 && game->day - game->rodDay > 31) {
+                        ImGui::Text("You failed, man. You officially sucked. Now go away.");
                     } else if (game->rodDay != -1 && game->getQuantityOf(ROD) == 0) {
                         ImGui::Text("WHAT?! You ATE the fecking rod?\nGo away! I don't want to talk to you.");
                     } else if (game->rodDay != -1) {
                         switch (conversationId) {
+                            case 0:
+                                ImGui::Text("Still doin' the fish hunting? I am waiting for you...");
+                                break;
+                                
                             case 1:
                                 ImGui::Text("Here, take this rod.\nJust throw it in some sort of water.\nIf you can bring me a fish within a month,\nI will give you a reward!");
                                 if (ImGui::Button("I don't think there's water inside this village.")) {

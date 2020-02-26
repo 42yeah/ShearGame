@@ -67,6 +67,9 @@ void Game::init() {
     rented = false;
     rodDay = -1;
     latched = false;
+    goldenLatched = 0;
+    
+    addItem(Item(FISH, 1));
 }
 
 void Game::clear() {
@@ -751,7 +754,7 @@ void Game::renderGUI() {
     if (hunger < 0.125f) {
         ImGui::Text("You are hungry as hell!");
     } else if (hunger < 0.25f) {
-        ImGui::Text("Oh, you are famished!");
+        ImGui::Text("You are famished!");
     } else if (hunger < 0.5f) {
         ImGui::Text("You need food, badly!");
     } else if (hunger < 1.0f) {
