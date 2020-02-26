@@ -698,6 +698,64 @@ void Monster::interact(Game *game) {
             }
             break;
             
+        case 6:
+            switch (rampIndex) {
+                case 0:
+                    ImGui::Text("Hmm. Fish. Zzz.");
+                    break;
+                    
+                case 1:
+                    ImGui::Text("Hey there! How are you today?");
+                    break;
+                    
+                case 2:
+                    ImGui::Text("Going to do some fishin'.");
+                    break;
+                    
+                case 3:
+                {
+                    if (game->rodDay == -1) {
+                        switch (conversationId) {
+                            case 0:
+                                ImGui::Text("Hey! Do you want to learn fishin' too?");
+                                if (ImGui::Button("Yeah!")) {
+                                    conversationId = 1;
+                                    game->rodDay = game->day;
+                                    game->addItem(Item(ROD, 1));
+                                }
+                                if (ImGui::Button("Nope.")) {
+                                    conversationId = 2;
+                                }
+                                break;
+
+                            case 2:
+                                ImGui::Text("Well, suit yourself.");
+                                break;
+                        }
+                    } else if (game->rodDay != -1 && game->getQuantityOf(ROD) == 0) {
+                        ImGui::Text("WHAT?! You ATE the fecking rod?\nGo away! I don't want to talk to you.");
+                    } else if (game->rodDay != -1) {
+                        switch (conversationId) {
+                            case 1:
+                                ImGui::Text("Here, take this rod.\nJust throw it in some sort of water.\nIf you can bring me a fish within a month,\nI will give you a reward!");
+                                if (ImGui::Button("I don't think there's water inside this village.")) {
+                                    conversationId = 2;
+                                }
+                                break;
+                                
+                            case 2:
+                                ImGui::Text("Of course there is!\nYou just need to look very carefully.");
+                                if (ImGui::Button("No, I seriously don't think there is.")) {
+                                    conversationId = 2;
+                                }
+                                break;
+                        }
+                    }
+                    break;
+                }
+            }
+            break;
+            
         default:
             break;
     }

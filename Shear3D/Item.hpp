@@ -17,7 +17,7 @@ class Game;
 
 enum ItemType {
     STEAK, EGG, COIN, FISH, URANIUM_BAR, RADIOACTIVE_FISH, PARTIALLY_EATEN_LAVISH_MEAL, AXE, TACO, ROTTEN_TACO,
-    LOG
+    LOG, ROD
 };
 
 class Item {

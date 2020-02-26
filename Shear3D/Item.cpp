@@ -59,6 +59,9 @@ std::string Item::getItemName(bool includesQuantity) {
         case LOG:
             ret = "log";
             break;
+            
+        case ROD:
+            ret = "fishing rod";
     }
     if (includesQuantity) {
         ret += " x" + std::to_string(quantity);
@@ -181,5 +184,27 @@ void Item::invoke(Game *game) {
             msg = "You ate the log. Chewing on it is extremely hard, and it cost you much time.";
             game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
             break;
+            
+        case ROD:
+            quantity--;
+            game->hunger += 0.5f;
+            game->stamina -= 2.5f;
+            msg = "You ate the fishing rod. It was long, and it latched into your throat.";
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
+            game->latched = true;
+            break;
+    }
+    if (game->latched) {
+        distrib = std::uniform_int_distribution<>(1, 2);
+        outcome = distrib(dev);
+        switch (outcome) {
+            case 2:
+                game->hunger -= 2.0f;
+                game->notifications.push_back(Notification("The latching fishing rod makes food come back!\nYou throw up.", msg, true, 10.0f));
+                break;
+                
+            default:
+                break;
+        }
     }
 }

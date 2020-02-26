@@ -65,6 +65,8 @@ void Game::init() {
     interactingMonster = nullptr;
     axed = false;
     rented = false;
+    rodDay = -1;
+    latched = false;
 }
 
 void Game::clear() {
