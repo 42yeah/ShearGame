@@ -679,12 +679,14 @@ void Monster::interact(Game *game) {
                         }
                             
                         case 7:
-                            ImGui::Text("Oh, you dare insulting me!\nYou know what I do when I was young?");
+                            ImGui::Text("Oh, you fecker!\nYou know what I do when I was young?");
                             break;
                             
                         case 8:
-                            ImGui::Text("Story time!");
-                            // Story
+                            ImGui::Text("Well, actually I've got no stories.\nI just want to try a taco out.\nCouldn't pay to go to the hotel.\nThanks!");
+                            if (ImGui::Button("Punch the old man!")) {
+                                conversationId = 7;
+                            }
                             break;
                             
                         case 9:
