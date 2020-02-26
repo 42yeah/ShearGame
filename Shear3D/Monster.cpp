@@ -553,6 +553,7 @@ void Monster::interact(Game *game) {
                     }
                     break;
             }
+            break;
             
         case 5:
             switch (rampIndex) {
@@ -786,6 +787,36 @@ void Monster::interact(Game *game) {
                     }
                     break;
                 }
+            }
+            break;
+            
+        case 7:
+            switch (rampIndex) {
+                case 0:
+                    ImGui::Text("Zzz...");
+                    break;
+                    
+                case 1:
+                    ImGui::Text("Oh hey! Good morning.");
+                    break;
+                    
+                case 2:
+                    ImGui::Text("Have you heard ui underscore 2? It's a good song.");
+                    break;
+                
+                case 3:
+                    if (game->rodDay == -2) {
+                        ImGui::Text("I used to saw a tomb with the engraving:\n \"WW91IGNhbiBlYXQgdGhlIHRyb3BoeS4g\nVGhlbiBpdCB3aWxsIHByb2R1Y2UgZ29sZC4gSXQgd29\nuJ3QgZmVlbCBzbyBnb29kIHRob3VnaC4=\".\nI don't know what it means.");
+                    } else if (game->rodDay == -1) {
+                        ImGui::Text("I used to saw a skywriting that reads:\n\"iVBORw0KGgoAAAANSUhEUgAAABAAAAAgCAYAAAAbifjM\nAAAAAXNSR0IArs4c6QAAAT5JREFU\nSIntk7FOwzAQhv+rmDsgMfYlLBYkOpKFo\nUuegbVzI0QFgtJHqPIMHsjA0qFLImVB\nfomMSBnyAscArmzHjsNCF37JSmLd/935f\nAH+dXpRLEBcX7FvX1U1RQGmWRvMfVXV5AXE\nsuoYVdU0GWsOyapgjFlVNensR8B+s\n+AkK6gt8yjgfH5nJZ0AwM3qDfvNgo0g\n6zmkYw+SrKCP8j1qCAJMtWVuPUcDYlW45we\nAM1/gYbmzvlOlggNnVdCWOSdZQdN0ZgVJ\nIVgK4b0hC6Azd7KBC0mVIh+EAICZmeh\n7rM2gaTpDJ5vBo3hvQcusJNSHHsANvJ\nzf9o7TA7yst0HIYblDJxtrUnuA+6cVPT+8D\nv4HSVZQCAKf+eJRsbn0vgsJDohpAoDPt\nRjXxN/q9ICgzB64/fiTCvhnue89\nfQHpBo6UvohVWwAAAABJRU5E\nrkJggg==\".\nI don't know what that means.");
+                    } else {
+                        ImGui::Text("I used to saw a stone tablet that says:\n \"SWYgeW91IGFyZSBsb29raW5nIGZvciB\nmaXNoLCBqdXN0IGdvIHRvIHN0\nZWFsIGluIHRoZSBmaXNoZXJtYW4ncyBjaGVz\ndC4gVGhlcmUgaXMgbGl0Z\nXJhbGx5IG5vd2hlcmUgdG8gZmlzaCBvbiB0aGlzIHN0dX\nBpZCBwbGFjZS4gSGUncyBwbGF5aW5nIG1hZ2ljLiBXaHkgY\nW0gSSBzcGVha2luZyBpbiBiYXNlNjQ/\".\nI don't know what it means.");
+                    }
+                    break;
+
+                case 4:
+                    ImGui::Text("Me and my girlfriend is leaving the village next year.\nThis village is small and poor.");
+                    break;
             }
             break;
             
