@@ -867,7 +867,6 @@ void Game::hospital(std::string reason) {
             if (items[i].quantity <= 0) {
                 items.erase(items.begin() + i, items.begin() + i + 1);
             }
-            break;
         }
     }
     notifications.push_back(Notification("Hospital", msg, false, -1.0f));

@@ -69,9 +69,10 @@ void Object::interact(Game *game) {
             break;
             
         case TREE:
+            game->stamina -= 0.1 * game->deltaTime;
             if (game->getQuantityOf(AXE) >= 1) {
-                for (int i = 0; i < game->monsters.size(); i++) {
-                    if (glm::distance(game->monsters[i].position, game->camera.position) <= 8.0f) {
+                for (int i = 0; i < game->monsters.size() && wellCounter > 1; i++) {
+                    if (glm::distance(game->monsters[i].position, game->camera.position) <= 7.0f) {
                         game->jail("You were found destroying the environment of the village.");
                         game->interactingObject = nullptr;
                         break;
