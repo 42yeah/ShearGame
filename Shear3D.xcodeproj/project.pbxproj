@@ -292,6 +292,7 @@
 		F1EFEFA9240506E4008AB6F4 /* Item.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Item.cpp; sourceTree = "<group>"; };
 		F1EFEFAA240506E4008AB6F4 /* Item.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Item.hpp; sourceTree = "<group>"; };
 		F1EFEFAF24052771008AB6F4 /* Monsters */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Monsters; sourceTree = "<group>"; };
+		F1EFEFB024063638008AB6F4 /* festive.monsterlist */ = {isa = PBXFileReference; lastKnownFileType = text; path = festive.monsterlist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -404,6 +405,7 @@
 				F106C0C9240031AA00320ED8 /* monster.vertex.glsl */,
 				F106C0CA240031B500320ED8 /* monster.fragment.glsl */,
 				F106C0CE24004AE600320ED8 /* monsterlist */,
+				F1EFEFB024063638008AB6F4 /* festive.monsterlist */,
 			);
 			path = Assets;
 			sourceTree = "<group>";

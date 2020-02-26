@@ -11,16 +11,15 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "../Includes/imgui/imgui.h"
 #include "Game.hpp"
-#include "Item.hpp"
 
 
-Monster::Monster(Texture *tex, int id, glm::vec3 position, GLuint VAO) : texture(tex), id(id), position(position), destination(position), VAO(VAO), destinationRamp(nullptr), pathIndex(0) {
+Monster::Monster(Texture *tex, int id, glm::vec3 position, GLuint VAO) : texture(tex), id(id), position(position), destination(position), VAO(VAO), destinationRamp(nullptr), pathIndex(0), mugCounter(-5), texId(id) {
 }
 
 void Monster::render(Program &program) { 
     glm::mat4 model(1.0f);
     model = glm::translate(model, position);
-    glUniform1i(program.loc("id"), id);
+    glUniform1i(program.loc("id"), texId);
     glUniformMatrix4fv(program.loc("model"), 1, GL_FALSE, glm::value_ptr(model));
     texture->pass(program.loc("tex"), 0);
     glBindVertexArray(VAO);
@@ -454,6 +453,7 @@ void Monster::interact(Game *game) {
                             if (ImGui::Button("Feck off.")) {
                                 conversationId = 2;
                             }
+                            break;
                             
                         case 2:
                             ImGui::Text("What the hell are you talking about? THEIF!");
@@ -554,6 +554,148 @@ void Monster::interact(Game *game) {
                     break;
             }
             
+        case 5:
+            switch (rampIndex) {
+                case 0:
+                case 21:
+                    switch (conversationId) {
+                        case 0:
+                            ImGui::Text("Zzz...");
+                            if (ImGui::Button("Mug him now!")) {
+                                if (mugCounter < 0) {
+                                    game->addItem(Item(COIN, -mugCounter));
+                                    mugCounter = -mugCounter + 1;
+                                    conversationId = 1;
+                                } else {
+                                    mugCounter = mugCounter * 2;
+                                    conversationId = 2;
+                                    texId = 12;
+                                }
+                            }
+                            break;
+                            
+                        case 1:
+                            ImGui::Text("Oh, no! I will give you all I have!\nPlease don't hurt me!\n(You get %d coins!)", (mugCounter - 1));
+                            break;
+                            
+                        case 2:
+                            ImGui::Text("(Oh feck, the old man came prepared this time!\nThis is actually a policeman under disguise!)\nThere you are! Prepare for JUSTICE!");
+                            break;
+                    }
+                    break;
+                    
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                case 20:
+                    switch (conversationId) {
+                        case 0:
+                            ImGui::Text("*The old man is talking nonsense.*");
+                            if (ImGui::Button("Hey old man!")) {
+                                conversationId = 1;
+                            }
+                            break;
+                            
+                        case 1:
+                            ImGui::Text("The quick brown fox jumps over the lazy dog.");
+                            if (ImGui::Button("Are you crazy?")) {
+                                conversationId = 2;
+                            }
+                            break;
+                            
+                        case 2:
+                            ImGui::Text("I used to be an adventure like you...");
+                            if (ImGui::Button("Huh?")) {
+                                conversationId = 3;
+                            }
+                            break;
+                            
+                        case 3:
+                            ImGui::Text("In case of emergency, dial 01189998819991197253.");
+                            if (ImGui::Button("Uh huh.")) {
+                                conversationId = 4;
+                            }
+                            break;
+                            
+                        case 4:
+                            ImGui::Text("Do you want to listen to my story?");
+                            if (ImGui::Button("Finally, some sentences that makes sense!")) {
+                                conversationId = 5;
+                            }
+                            if (ImGui::Button("Yes, please")) {
+                                conversationId = 6;
+                            }
+                            if (ImGui::Button("Feck off, old man")) {
+                                conversationId = 7;
+                            }
+                            break;
+                            
+                        case 5:
+                            ImGui::Text("Don't sleep on my bed. It's my spot.");
+                            if (ImGui::Button("Feck off, old man")) {
+                                conversationId = 7;
+                            }
+                            break;
+                            
+                        case 6:
+                        {
+                            std::string msg = "Gimme a taco, and I will tell you.";
+                            bool haveTaco = game->getQuantityOf(TACO) > 0;
+                            if (!haveTaco) {
+                                msg += "\n(You don't have a taco.)";
+                            }
+                            ImGui::Text("%s", msg.c_str());
+                            if (haveTaco && ImGui::Button("Give him a taco.")) {
+                                game->addItem(Item(TACO, -1));
+                                conversationId = 8;
+                            }
+                            for (int i = 0; i < game->items.size(); i++) {
+                                if (game->items[i].type == TACO) {
+                                    continue;
+                                }
+                                if (ImGui::Button(std::string("Give him a " + game->items[i].getItemName() + " instead.").c_str())) {
+                                    conversationId = 9;
+                                    game->addItem(Item(game->items[i].type, -1));
+                                    shove = Item(game->items[i].type, 1);
+                                }
+                            }
+                            break;
+                        }
+                            
+                        case 7:
+                            ImGui::Text("Oh, you dare insulting me!\nYou know what I do when I was young?");
+                            break;
+                            
+                        case 8:
+                            ImGui::Text("Story time!");
+                            // Story
+                            break;
+                            
+                        case 9:
+                            ImGui::Text("%s", std::string("I mean a TACO, not a " + shove.getItemName() + "!\n(The old man shoves the food back into your mouth.)").c_str());
+                            shove.invoke(game);
+                            break;
+                    }
+                    break;
+            }
+            break;
+            
         default:
             break;
     }
@@ -564,7 +706,8 @@ void Monster::interact(Game *game) {
             game->jail("You were found breaking into someone's house.");
         }
         if ((id == 0 && conversationId == 1) ||
-            (id == 3 && conversationId == 3)) {
+            (id == 3 && conversationId == 3) ||
+            (id == 5 && rampIndex >= 1 && rampIndex <= 20 && conversationId == 7)) {
             game->hospital("You got punched straight in the face and lose conciousness.");
         }
         if (id == 0 && conversationId == 2) {
@@ -579,9 +722,11 @@ void Monster::interact(Game *game) {
         if (id == 2 && conversationId == 1) {
             game->jail("You were found lying.");
         }
-        if (id == 4 && rampIndex == 9 && conversationId == 3) {
+        if ((id == 4 && rampIndex == 9 && conversationId == 3) ||
+            (id == 5 && (rampIndex == 0 || rampIndex == 21) && conversationId == 2)) {
             game->jail("You were found mugging.");
         }
+        texId = id;
         game->interactingMonster = nullptr;
     }
     ImGui::End();

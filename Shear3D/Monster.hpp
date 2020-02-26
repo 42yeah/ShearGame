@@ -14,6 +14,7 @@
 #include "Program.hpp"
 #include "Texture.hpp"
 #include "Object.hpp"
+#include "Item.hpp"
 
 
 class Game;
@@ -38,6 +39,7 @@ public:
     void interact(Game *game);
 
     std::vector<Ramp> ramps;
+    std::vector<Ramp> festiveRamps;
     glm::vec3 position;
     glm::vec3 destination;
     float speed;
@@ -49,6 +51,11 @@ public:
     int rampIndex;
     int pathIndex;
     int conversationId;
+    
+    // Old man variables
+    Item shove;
+    int mugCounter;
+    int texId;
 };
 
 #endif /* Monster_hpp */

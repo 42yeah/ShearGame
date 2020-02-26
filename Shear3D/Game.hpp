@@ -62,7 +62,7 @@ private:
     GLuint generateMonsterRect();
     
     void loadMap(std::string path);
-    void loadMonsters(std::string path);
+    void loadMonsters(std::string path, std::string festivePath);
     void addObject(int id, glm::vec3 pos, float rotY = 0.0f);
     bool collides(glm::vec3 pos, glm::vec3 objPos, float objWidth);
     void jail(std::string reason);
@@ -88,9 +88,10 @@ private:
     std::vector<Monster> monsters;
     glm::vec3 sunDirection;
     glm::vec3 sunColor;
-    int day;
     
     // === GAME VALUES === //
+    int day;
+    float standarized;
     float hunger;
     float stamina;
     CharacterState state;
@@ -121,6 +122,7 @@ private:
     ImGuiIO *io;
     std::vector<Notification> notifications;
     std::vector<Item> items;
+    std::vector<Ramp> ramps;
 
     bool tabPressed;
 };

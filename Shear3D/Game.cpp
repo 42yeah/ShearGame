@@ -48,7 +48,7 @@ void Game::init() {
     models = loadModels("Assets/Model/shear.1.obj", "Assets/Model");
     loadMap("Assets/map");
     monsterTexture = Texture("Assets/Monsters/Monsters.png", RGBA);
-    loadMonsters("Assets/monsterlist");
+    loadMonsters("Assets/monsterlist", "Assets/festive.monsterlist");
     
     notifications.push_back(Notification("Story", "Your father just commited suicide after losing a bet worth of 1000 eggs with the local rich man.\nIt is now up to you to pay the debt.\nLuckily, you have a well which spurts infinite amount of gold coins at your backyard.\nWhen you get enough eggs, find the rich man,\nand fullfill your side of the deal!", false, -1.0f));
     io->WantSaveIniSettings = false;
@@ -158,7 +158,7 @@ void Game::update() {
     additiveTime += deltaTime;
     
     float s = additiveTime * 0.02f;
-    float standarized = sinf(s - 3.14159f / 2.0f) * 0.5f + 0.5f;
+    standarized = sinf(s - 3.14159f / 2.0f) * 0.5f + 0.5f;
     
     steakCounter -= deltaTime;
     if (steakCounter < 0.0f) {
@@ -188,7 +188,7 @@ void Game::update() {
             postEffectProgram.reload();
             monsterProgram.reload();
             loadMap("Assets/map");
-            loadMonsters("Assets/monsterlist");
+            loadMonsters("Assets/monsterlist", "Assets/festive.monsterlist");
         }
     } else {
         reloadKeyPressed = false;
@@ -581,7 +581,7 @@ void Game::addObject(int id, glm::vec3 pos, float rotY) {
     objects.push_back(object);
 }
 
-void Game::loadMonsters(std::string path) { 
+void Game::loadMonsters(std::string path, std::string festivePath) { 
     monsters.clear();
     std::ifstream reader(path);
     int index = -1;
@@ -593,7 +593,7 @@ void Game::loadMonsters(std::string path) {
         switch (action) {
             case 'M':
                 if (index != -1 && monsters[index].ramps.size() > 0) {
-                    monsters[index].ramps.push_back(Ramp { 1.0f, glm::vec3(0.0f, 0.0f, 0.0f ) });
+                    monsters[index].ramps.push_back(Ramp{ 1.0f, glm::vec3(0.0f, 0.0f, 0.0f ) });
                 }
                 reader >> id >> x >> y >> z;
                 monsters.push_back(Monster(&monsterTexture, id, glm::vec3(x, y, z), monster));
@@ -603,6 +603,27 @@ void Game::loadMonsters(std::string path) {
             case 'R':
                 reader >> time >> x >> y >> z;
                 monsters[index].ramps.push_back(Ramp{ time, glm::vec3(x, y, z) });
+                break;
+        }
+    }
+    reader = std::ifstream(festivePath);
+    index = -1;
+    bool majorBreak = false;
+    while (!reader.eof() && !majorBreak) {
+        char action;
+        float time, x, y, z;
+        reader >> action;
+        switch (action) {
+            case 'M':
+                index++;
+                if (index >= monsters.size()) {
+                    majorBreak = true;
+                }
+                break;
+                
+            case 'R':
+                reader >> time >> x >> y >> z;
+                monsters[index].festiveRamps.push_back(Ramp{ time, glm::vec3(x, y, z) });
                 break;
         }
     }
@@ -782,6 +803,29 @@ void Game::renderGUI() {
             }
         }
         ImGui::End();
+        
+        // Render debug panel
+        ImGui::SetNextWindowPos(ImVec2{ 200.0f, 100.0f }, ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2{ 400.0f, 200.0f }, ImGuiCond_FirstUseEver);
+        ImGui::Begin("Debug");
+        ImGui::Text("It is now %f", standarized);
+        if (ImGui::Button("Record path")) {
+            ramps.push_back(Ramp{ standarized, glm::round(glm::vec3(camera.position.x, 0.0f, camera.position.z)) });
+        }
+        if (ImGui::CollapsingHeader("Path")) {
+            if (ImGui::Button("Print")) {
+                for (int i = 0; i < ramps.size(); i++) {
+                    std::cout << "R " << ramps[i].time << " " << (int) ramps[i].destination.x << " " << (int) ramps[i].destination.y << " " << (int) ramps[i].destination.z << std::endl;
+                }
+            }
+            if (ImGui::Button("Clear")) {
+                ramps.clear();
+            }
+            for (int i = 0; i < ramps.size(); i++) {
+                ImGui::Text("R %f %d %d %d", ramps[i].time, (int) ramps[i].destination.x, (int) ramps[i].destination.y, (int) ramps[i].destination.z);
+            }
+        }
+        ImGui::End();
     }
     
     if (interactingObject && glm::distance(interactingObject->pos, camera.position) <= 4.0f) {
@@ -912,6 +956,10 @@ void Game::refresh() {
         notifications.push_back(Notification("Rots", "The tacos rot.", true, 10.0f));
         addItem(Item(TACO, -numTacos));
         addItem(Item(ROTTEN_TACO, numTacos));
+    }
+    
+    for (int i = 0; i < monsters.size(); i++) {
+        monsters[i].mugCounter--;
     }
 }
 
