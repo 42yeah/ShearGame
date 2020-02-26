@@ -1,5 +1,7 @@
 ## Shear 3D
 
+__WARNING: slight swears are present in this game!__
+
 ![Partially eaten lavish meal!](./partially.eaten.lavish.meal.png)
 
 Shear 3D is  the remake of ShearGame, a game which I made long before. It's like the first game I've ever made. It utilizes ImGui!
