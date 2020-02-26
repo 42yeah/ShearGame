@@ -841,7 +841,42 @@ void Monster::interact(Game *game) {
             break;
             
         case 9:
-            
+            switch (rampIndex) {
+                case 0:
+                    switch (conversationId) {
+                        case 0:
+                            ImGui::Text("Zzz... Hmm... Mails and stuffs...");
+                            if (ImGui::Button("Mug her now!")) {
+                                conversationId = 1;
+                            }
+                            break;
+                            
+                        case 1:
+                            ImGui::Text("Zzz... What?!\nYou do realize I live next to the policeman, yeah?");
+                            break;
+                    }
+                    break;
+                    
+                case 1:
+                    if (game->mails.size() > 0) {
+                        // TODO
+                    } else {
+                        ImGui::Text("Hi! You have no new mails.");
+                    }
+                    break;
+                    
+                case 2:
+                    ImGui::Text("Heading to the rich guy's house.\nHe has tons of mails everyday!");
+                    break;
+                    
+                case 3:
+                    ImGui::Text("Oh hello! Having fun?");
+                    break;
+                    
+                case 4:
+                    ImGui::Text("*The mailman is discussing with the rich man.*");
+                    break;
+            }
             break;
             
         default:
@@ -871,7 +906,8 @@ void Monster::interact(Game *game) {
             game->jail("You were found lying.");
         }
         if ((id == 4 && rampIndex == 9 && conversationId == 3) ||
-            (id == 5 && (rampIndex == 0 || rampIndex == 21) && conversationId == 2)) {
+            (id == 5 && (rampIndex == 0 || rampIndex == 21) && conversationId == 2) ||
+            (id == 9 && rampIndex == 0 && conversationId == 1)) {
             game->jail("You were found mugging.");
         }
         texId = id;

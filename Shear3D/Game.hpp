@@ -124,6 +124,7 @@ private:
     bool escaping;
     ImGuiIO *io;
     std::vector<Notification> notifications;
+    std::vector<Notification> mails;
     std::vector<Item> items;
     std::vector<Ramp> ramps;
 
