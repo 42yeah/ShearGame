@@ -810,27 +810,27 @@ void Game::renderGUI() {
         ImGui::End();
         
         // Render debug panel
-        ImGui::SetNextWindowPos(ImVec2{ 200.0f, 100.0f }, ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2{ 400.0f, 200.0f }, ImGuiCond_FirstUseEver);
-        ImGui::Begin("Debug");
-        ImGui::Text("It is now %f", standarized);
-        if (ImGui::Button("Record path")) {
-            ramps.push_back(Ramp{ standarized, glm::round(glm::vec3(camera.position.x, 0.0f, camera.position.z)) });
-        }
-        if (ImGui::CollapsingHeader("Path")) {
-            if (ImGui::Button("Print")) {
-                for (int i = 0; i < ramps.size(); i++) {
-                    std::cout << "R " << ramps[i].time << " " << (int) ramps[i].destination.x << " " << (int) ramps[i].destination.y << " " << (int) ramps[i].destination.z << std::endl;
-                }
-            }
-            if (ImGui::Button("Clear")) {
-                ramps.clear();
-            }
-            for (int i = 0; i < ramps.size(); i++) {
-                ImGui::Text("R %f %d %d %d", ramps[i].time, (int) ramps[i].destination.x, (int) ramps[i].destination.y, (int) ramps[i].destination.z);
-            }
-        }
-        ImGui::End();
+//        ImGui::SetNextWindowPos(ImVec2{ 200.0f, 100.0f }, ImGuiCond_FirstUseEver);
+//        ImGui::SetNextWindowSize(ImVec2{ 400.0f, 200.0f }, ImGuiCond_FirstUseEver);
+//        ImGui::Begin("Debug");
+//        ImGui::Text("It is now %f", standarized);
+//        if (ImGui::Button("Record path")) {
+//            ramps.push_back(Ramp{ standarized, glm::round(glm::vec3(camera.position.x, 0.0f, camera.position.z)) });
+//        }
+//        if (ImGui::CollapsingHeader("Path")) {
+//            if (ImGui::Button("Print")) {
+//                for (int i = 0; i < ramps.size(); i++) {
+//                    std::cout << "R " << ramps[i].time << " " << (int) ramps[i].destination.x << " " << (int) ramps[i].destination.y << " " << (int) ramps[i].destination.z << std::endl;
+//                }
+//            }
+//            if (ImGui::Button("Clear")) {
+//                ramps.clear();
+//            }
+//            for (int i = 0; i < ramps.size(); i++) {
+//                ImGui::Text("R %f %d %d %d", ramps[i].time, (int) ramps[i].destination.x, (int) ramps[i].destination.y, (int) ramps[i].destination.z);
+//            }
+//        }
+//        ImGui::End();
     }
     
     if (interactingObject && glm::distance(interactingObject->pos, camera.position) <= 4.0f) {
