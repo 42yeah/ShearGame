@@ -2,19 +2,19 @@ language: cpp
 compiler: cl
 os: windows
 script:
-    - source ./run_command_and_apply_environment_differences.sh "call vcvars64_vs2017.bat"
-    - mkdir build
-    - cd build
-    - cmake -G "NMake Makefiles" ..
-    - nmake all
-    - 7z a Shear3D.zip Shear3D
-    - ls
+- source ./run_command_and_apply_environment_differences.sh "call vcvars64_vs2017.bat"
+- mkdir build
+- cd build
+- cmake -G "NMake Makefiles" ..
+- nmake all
+- 7z a Shear3D.zip Shear3D
+- ls
 deploy:
-    provider: releases
-    api_key:
-        secure: "Q/BScxScRwmcgBmvLrYq07zh6DPnXRFZ9mKtx2uS23R6loMH+mMdt0xkGDiJd5ObLMK8Zs9lBmOwRySRLZCj9362qWWQh2rvU5UYFEgEkToy0fCKlq3miica9QCl/pLTPaUGmJX06QTtD5Vh3vZ/Y+XqyBjBBbmCQrIc4v3i6Erqu2MrbnrDR4es4vBzGTTJKY29jh0Gsk88sSb6hK3fBDBouehX7E3hUbJbYks+ggPGCpTlWsxN+27D7+bwbE7wHrwOuE4hb49FQXEoUp5swlJPWkUG7H+BlCrWWO2FGSn6eA0c/tpiMS9M6ynX+VDkg1Aj1CjQCE/ON7fjoN6O73URCtYz59++PQBo3U83nV710tJZ+TaFWlKkJgSd39vO3JdnbEUC5vZFkuV54RCj1WeziXEaoXnMkbCHk7BQtBSwPKHdwFoQvLi8DW/Wc8XO0l+nBfmyGSrz17ZkxQPUZwUdaeYiEfbOC5k85IT8OKGHDghx5XJQ/mSucje8bAZg13oT5H1caM+qAU9hxMVmqGAkfTHptCTN+3iHfzYKCJZbFVDkcOr/b/Sqa94J9vm139SR/zUjCOpSQNmKTXIJ6+HwjBMIUs9ye6FFs9zJQZTDj/njuL4Zk88e26ob4GmedjmEvXodIBi9NWkhjmyI2qz4G+AIaBlzCBOeNdA8lj8="
-    file: "build/Shear3D.zip"
-    skip_cleanup: true
-    on:
-        tags: true
-# before_install:
+  provider: releases
+  user: 42yeah
+  password:
+    secure: hI4uJTSQFThCYBH7fTgnWsQLAVsl0uTqGys0+/GoCxSi5krzKs3z7BacrCNs4h7kTIignzka6IFZBRQFQfI1Y/AeaLwecQL3GaQHM10tPd1i1ipDQ1c6FbbCiRHVV29Dozfhg2LKkcTsvqpHsJdDPLno0GfXWjGNcsH6MNVP7T3it/vXAj3CyMGJKC1cmXrWUc2HT0yVkd1fO8zetacZWb9wfv2RWp3Q43Hl6+jOYrG04QycCwDfIHgdbVWwmKU70mTGc6TPAKDiaeA0UwrURNRZbDz/m+S51CCUSqXr4qgqRUizZ2IWWgsLN5yHI0Hzk1FsS1OXh42qzgi6CNeeSgR+S08RnWvbYqz6WGhsLravlbgD1fw8bGBBqUt3LqJquLkYLeO/XM9HDhKqDBjQJGkrtB1yUEWOCWfEwuYOWCQeABXJoDgeUuBt8purzeF81l1i9cOiwlqA20JFqwhfr3TNoj95zYTw4ACz7pgrnE4mlqaHsebmxcdrluorU8lVEJf4L4aJ/PRQFRxN4Hfue+CBd87hlqWXWl7pNifoNZ/Xo9QWnsVRh8WPUDydenAPo7ebxKU6XW1ztdjAQzoT+JNCeMF8MiSSw5iDng8QzhOEiwLwaWBgmeKjhpgda8uUTRaP1Ll4R6dzvPY2yPMfSRYhckJQil5tmKCGS1aNsys=
+  file: build/Shear3D.zip
+  skip_cleanup: true
+  on:
+    tags: true
