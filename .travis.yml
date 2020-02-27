@@ -4,7 +4,8 @@ os: windows
 script:
     - mkdir build
     - cd build
-    - cmake -G "Visual Studio 17" ..
-    - make
+    - cmake -G "Visual Studio 15 2017 Win64" ..
+    - ls
+    - MSBuild.exe Shear3D.proj -property:Configuration=release
 
 # before_install:
