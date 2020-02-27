@@ -5,8 +5,11 @@ script:
     - source ./run_command_and_apply_environment_differences.sh "call vcvars64_vs2017.bat"
     - mkdir build
     - cd build
-    - cmake ..
+    - export CMAKE_C_COMPILER="cl.exe"
+    - export CMAKE_CXX_COMPILER="cl.exe"
+    - export CMAKE_MAKE_PROGRAM="nmake"
+    - cmake -G "Unix Makefiles" ..
     - ls
-    - devenv Shear3D.sln /build
+    - nmake
 
 # before_install:
