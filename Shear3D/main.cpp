@@ -64,7 +64,7 @@ int main(int argc, const char * argv[]) {
         game.renderGUI();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window); 
     }
     return 0;
 }
