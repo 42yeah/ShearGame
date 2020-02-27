@@ -14,7 +14,7 @@ script:
     - ls
 deploy:
     provider: releases
-    api_key: "7f61fd49743b39c7438cdf441c01a501094d86f6"
+    api_key: "I7gw59avI3KhNybISnVfJrvIeomDwtHwVuV81oLYU1xeL+2vc/iZuETszDov43YDkoWHiRcZeMw6lSifdhG3Rf7HHt/RtNDLVMkKC6iclgbq6BpFrZf0kzfGF7aqyf8a6wN+BEgWS0Wy9qy1KY5RugyULpRDtkHWz6c+QtyFgfszGGphAT0nvxw260b6pBDBCsdnAU4qVUnHFxah4snRolIMY4j5posCgn91H3ylyji6WgDCoVMECb01cxDxWKbhSAqMAwClkKuQcLRzdAQJ8i7OuUX48mVKCQjrGuwI58M8cgouJbXOpPIi/3TYvlqFBUcemhdsx/vtv0IkzaE8Ol7aSg+eAcNR0XYD9lXo0N2a1mPTgOQb1imhOG10zI77fT7NpSSj+Fvj2coavCeRezE04MG74o+UdTPrIObTxcc/0M9xW+1FInPX2QNSgUIbtINHImMx+kCvbTg5u4L9+yBCNdjC76g4DJCUOF2mwmGrZxSnA8cqG9qUwHLS83j+Fq/jLUIH3UuDTXqjGGJFmEW9SXUnKc7Lu4yxRaHrKJXIgQPVytbp190Gru2XbdR28w3m05PgVmIQRiC3qFrKIapQvTT95RF3TeSDjTUf3zE+wPpK0ywm6mgneDFCxM/WC6mKUk6CEuCZZ9yj7XnbpxVbJAE6llctF7WP53Q19z0="
     file: "build/Shear3D.zip"
     skip_cleanup: true
     on:
