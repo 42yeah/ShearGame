@@ -10,6 +10,7 @@ script:
     - cd build
     - cmake -G "NMake Makefiles" ..
     - nmake all
+    - 7z a zip *
     - ls
 deploy:
     provider: releases
