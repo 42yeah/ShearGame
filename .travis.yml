@@ -11,8 +11,11 @@ script:
     - cmake -G "NMake Makefiles" ..
     - nmake all
     - ls
-#deploy:
-#    provider: releases
-#    api_key:
-#    file:
+deploy:
+    provider: releases
+    api_key: "7f61fd49743b39c7438cdf441c01a501094d86f6"
+    file: "build/Shear3D/Shear3D.exe"
+    skip_cleanup: true
+    on:
+        tags: true
 # before_install:
