@@ -6,6 +6,6 @@ script:
     - cd build
     - cmake ..
     - ls
-    - nmake
+    - devenv Shear3D.sln /build
 
 # before_install:
