@@ -14,10 +14,6 @@ And now because of the incoming 7DRL practicing and other reasons, I am remaking
 
 Well, we can't expect everybody to use Xcode, right? It sucks! So we use CMake from now on. To compile this project, all you need is:
 
-- GLFW >= 3.2
-
-and
-
 ```sh
 mkdir build && cd build
 cmake ..
