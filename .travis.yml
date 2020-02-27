@@ -1,12 +1,16 @@
 language: cpp
 compiler: clang
 os: windows
+env:
+    - MAKEFILE="nmake"
+    -
+    
 script:
     - source ./run_command_and_apply_environment_differences.sh "call vcvars64_vs2017.bat"
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake --help
     - ls
-    - MSBuild ALL_BUILD.vcxproj -property:Configuration=Release
+    - nmake all
 
 # before_install:
