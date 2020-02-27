@@ -1,10 +1,9 @@
 language: cpp
-compiler: clang
+compiler: cl
 os: windows
 env:
-    - MAKEFILE="nmake"
-    -
-    
+    - CMAKE_CXX_COMPILER="cl.exe"
+    - CMAKE_C_COMPILER="cl.exe"
 script:
     - source ./run_command_and_apply_environment_differences.sh "call vcvars64_vs2017.bat"
     - mkdir build
