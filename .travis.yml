@@ -9,7 +9,7 @@ script:
     - source ./run_command_and_apply_environment_differences.sh "call vcvars64_vs2017.bat"
     - mkdir build
     - cd build
-    - cmake --help
+    - cmake -G "NMake Makefiles" ..
     - ls
     - nmake all
 
