@@ -7,6 +7,6 @@ script:
     - cd build
     - cmake ..
     - ls
-    - nmake
+    - MSBuild ALL_BUILD.vcxproj -property:Configuration=Release
 
 # before_install:
