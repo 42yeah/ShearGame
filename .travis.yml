@@ -4,7 +4,7 @@ os: windows
 script:
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake -G "Visual Studio 17" ..
     - make
 
 # before_install:
