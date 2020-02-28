@@ -56,6 +56,9 @@ public:
     Item shove;
     int mugCounter;
     int texId;
+    
+    // Beggar variables
+    bool begging;
 };
 
 #endif /* Monster_hpp */

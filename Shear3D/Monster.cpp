@@ -13,7 +13,7 @@
 #include "Game.hpp"
 
 
-Monster::Monster(Texture *tex, int id, glm::vec3 position, GLuint VAO) : texture(tex), id(id), position(position), destination(position), VAO(VAO), destinationRamp(nullptr), pathIndex(0), mugCounter(-5), texId(id) {
+Monster::Monster(Texture *tex, int id, glm::vec3 position, GLuint VAO) : texture(tex), id(id), position(position), destination(position), VAO(VAO), destinationRamp(nullptr), pathIndex(0), mugCounter(-5), texId(id), begging(false) {
 }
 
 void Monster::render(Program &program) { 
@@ -27,7 +27,7 @@ void Monster::render(Program &program) {
 }
 
 void Monster::update(float dt, float time, int day, std::vector<Object> &objects) {
-    if (ramps.size() <= 0) {
+    if (ramps.size() <= 0 || begging) {
         return;
     }
     Ramp *prevRamp = nullptr, currentRamp;
@@ -911,6 +911,123 @@ void Monster::interact(Game *game) {
                     }
                     break;
             }
+            break;
+            
+        case 11:
+            switch (rampIndex) {
+                case 0:
+                    ImGui::Text("Zzz...");
+                    break;
+                    
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                    switch (conversationId) {
+                        case 0:
+                            begging = true;
+                            ImGui::Text("Hey, kind sir, good sir,\nwould you spare me something?");
+                            for (int i = 0; i < game->items.size(); i++) {
+                                int numDonation = game->items[i].quantity / 2 + 1;
+                                if (ImGui::Button(std::string("Give him " + std::to_string(numDonation) + " of " + game->items[i].getItemName()).c_str())) {
+                                    game->addItem(Item(game->items[i].type, -numDonation));
+                                    std::uniform_int_distribution<> distrib(1, 2);
+                                    std::random_device dev;
+                                    conversationId = distrib(dev);
+                                }
+                            }
+                            if (game->items.size() == 0 && ImGui::Button("I don't have anything!")) {
+                                conversationId = 4;
+                            }
+                            if (ImGui::Button("Beat him up!")) {
+                                conversationId = 3;
+                            }
+                            break;
+                            
+                        case 1:
+                            begging = true;
+                            ImGui::Text("Oh thank you! But could you give me something more?");
+                            for (int i = 0; i < game->items.size(); i++) {
+                                int numDonation = game->items[i].quantity / 2 + 1;
+                                if (ImGui::Button(std::string("Give him " + std::to_string(numDonation) + " of " + game->items[i].getItemName()).c_str())) {
+                                    game->addItem(Item(game->items[i].type, -numDonation));
+                                    std::uniform_int_distribution<> distrib(1, 2);
+                                    std::random_device dev;
+                                    conversationId = distrib(dev);
+                                }
+                            }
+                            if (game->items.size() == 0 && ImGui::Button("I don't have anything!")) {
+                                conversationId = 4;
+                            }
+                            if (ImGui::Button("Beat him up!")) {
+                                conversationId = 3;
+                            }
+                            break;
+                            
+                        case 2:
+                            ImGui::Text("Thanks, kind sir, I think I am enough for today.");
+                            begging = false;
+                            break;
+                            
+                        case 3:
+                            ImGui::Text("Oh no, police!\nSomeone is beating this poor man up!");
+                            begging = false;
+                            break;
+                            
+                        case 4:
+                            ImGui::Text("Ugh. Cheapstake. Get off my face!");
+                            begging = false;
+                            break;
+                    }
+                    break;
+            }
+            break;
+            
+        case 12:
+            switch (rampIndex) {
+                case 0:
+                    ImGui::Text("Zzz...");
+                    break;
+                    
+                case 1:
+                    switch (conversationId) {
+                        case 0:
+                            ImGui::Text("Stay out of trouble.");
+                            if (ImGui::Button("Punch him!")) {
+                                conversationId = 1;
+                            }
+                            if (ImGui::Button("Do you live here?")) {
+                                conversationId = 2;
+                            }
+                            break;
+                            
+                        case 1:
+                            ImGui::Text("Oh FECK! You are good as dead!");
+                            break;
+                            
+                        case 2:
+                            ImGui::Text("Oh yes.\nThe village only has so much room, you know.");
+                            if (ImGui::Button("With the mailgirl?")) {
+                                conversationId = 3;
+                            }
+                            break;
+                            
+                        case 3:
+                            ImGui::Text("Yeah. The post office and the police station both starts\nwith a 'P', you know.");
+                            if (ImGui::Button("And you sleep in the prison?")) {
+                                conversationId = 4;
+                            }
+                            break;
+                            
+                        case 4:
+                            ImGui::Text("Well, as I said, limited room!");
+                            break;
+                    }
+                    break;
+            }
+            break;
             
         default:
             break;
@@ -923,7 +1040,8 @@ void Monster::interact(Game *game) {
         }
         if ((id == 0 && conversationId == 1) ||
             (id == 3 && conversationId == 3) ||
-            (id == 5 && rampIndex >= 1 && rampIndex <= 20 && conversationId == 7)) {
+            (id == 5 && rampIndex >= 1 && rampIndex <= 20 && conversationId == 7) ||
+            (id == 12 && conversationId == 1)) {
             game->hospital("You got punched straight in the face and lose conciousness.");
         }
         if (id == 0 && conversationId == 2) {
@@ -946,8 +1064,15 @@ void Monster::interact(Game *game) {
         if (id == 10 && conversationId == 1) {
             game->hospital("You told the doctor you were sick.");
         }
-        texId = id;
-        game->interactingMonster = nullptr;
+        if (id == 11 && conversationId == 3) {
+            game->jail("You were found beating the beggar up.");
+        }
+        if (begging) {
+            game->notifications.push_back(Notification("Won't let go", "The beggar won't let you go!", true, 10.0f));
+        } else {
+            texId = id;
+            game->interactingMonster = nullptr;
+        }
     }
     ImGui::End();
 }
