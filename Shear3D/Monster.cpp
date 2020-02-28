@@ -1083,6 +1083,10 @@ void Monster::interact(Game *game) {
         if (id == 11 && conversationId == 3) {
             game->jail("You were found beating the beggar up.");
         }
+        if (id == 2 && rampIndex == 1 && conversationId == 3) {
+            // WIN CONDITION
+            game->won = true;
+        }
         if (begging) {
             game->notifications.push_back(Notification("Won't let go", "The beggar won't let you go!", true, 10.0f));
         } else {

@@ -71,6 +71,7 @@ void Game::init() {
     hallucinating = 0.0f;
     luciferiumFlipper = 1.0f;
     stuck = true;
+    won = false;
 }
 
 void Game::clear() {
@@ -79,6 +80,9 @@ void Game::clear() {
 }
 
 void Game::render() {
+    if (day >= 365 || won) {
+        return;
+    }
 //    std::cout << camera.position.x << ", " << camera.position.y << ", " << camera.position.z << std::endl;
     glViewport(0, 0, windowSize.x, windowSize.y);
     renderPass.use();
@@ -726,6 +730,15 @@ void Game::escape(bool es) {
 }
 
 void Game::renderGUI() {
+    if (day >= 365) {
+        escape(escaping = true);
+        lose();
+        return;
+    } else if (won) {
+        escape(escaping = true);
+        win();
+        return;
+    }
     float y = 10.0f;
     bool open = true;
     for (int i = 0; i < notifications.size(); i++) {
@@ -1265,6 +1278,51 @@ void Game::load() {
         items.push_back(item);
     }
     fclose(file);
+}
+
+void Game::lose() {
+    ImGui::SetNextWindowPos(ImVec2(100.0f, 100.0f), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(400.0f, 300.0f), ImGuiCond_FirstUseEver);
+    ImGui::Begin("LOSE");
+    ImGui::Text("After 365 days, you failed to fullfill your promise...");
+    ImGui::Text("And you've lost your game! Don't worry, you will be better luck next time :D");
+    ImGui::Text("Here's your latest inventory:");
+    for (int i = 0; i < items.size(); i++) {
+        ImGui::Text("%s", items[i].getItemName(true).c_str());
+    }
+    ImGui::Separator();
+    ImGui::Text("Credits:");
+    ImGui::Text("Creator:\n- Me! (42yeah)");
+    ImGui::Text("Playtesting:\n- Zambon21\n- Penegrine\n- Some other online good peoples\n- And you!");
+    ImGui::Separator();
+    ImGui::Text("Thank you for playing!");
+    if (ImGui::Button("Awww.")) {
+        exit(0);
+    }
+    ImGui::End();
+}
+
+void Game::win() {
+    ImGui::SetNextWindowPos(ImVec2(100.0f, 100.0f), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(400.0f, 300.0f), ImGuiCond_FirstUseEver);
+    ImGui::Begin("WIN!");
+    ImGui::Text("You WIN the game!\nOh my god! I didn't even get to win it once!");
+    ImGui::Text("You are at your %d day of promise fullfillment", day);
+    ImGui::Text("When you win, those things are in your inventory:");
+    for (int i = 0; i < items.size(); i++) {
+        ImGui::Text("%s", items[i].getItemName(true).c_str());
+    }
+    ImGui::Text("And of course, 1000 fecking eggs!");
+    ImGui::Separator();
+    ImGui::Text("Credits:");
+    ImGui::Text("Creator:\n- Me! (42yeah)");
+    ImGui::Text("Playtesting:\n- Zambon21\n- Penegrine\n- Some other online good peoples\n- And you!");
+    ImGui::Separator();
+    ImGui::Text("Thank you Amsterdam! Good night!");
+    if (ImGui::Button("Horray!")) {
+        exit(0);
+    }
+    ImGui::End();
 }
 
 

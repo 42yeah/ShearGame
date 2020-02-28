@@ -55,6 +55,8 @@ public:
     void save();
     void load();
     void escape(bool es);
+    void win();
+    void lose();
     
 private:
     friend class Item;
@@ -123,6 +125,7 @@ private:
     std::vector<Notification> notifications;
     std::vector<Notification> mails;
     std::vector<Item> items;
+    bool won;
     
     // === LOW VALUES === //
     double time;
