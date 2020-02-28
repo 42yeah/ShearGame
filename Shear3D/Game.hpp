@@ -27,6 +27,7 @@ enum CharacterState {
 };
 
 struct Notification {
+    Notification() {}
     Notification(std::string title, std::string content, bool live, float aliveTime);
 
     std::string title;
@@ -51,6 +52,8 @@ public:
     void renderGUI();
     void mouseEvent(glm::vec2 mousePos);
     void interact();
+    void save();
+    void load();
     void escape(bool es);
     
 private:
@@ -117,6 +120,9 @@ private:
     float hallucinating;
     float luciferiumFlipper;
     bool stuck;
+    std::vector<Notification> notifications;
+    std::vector<Notification> mails;
+    std::vector<Item> items;
     
     // === LOW VALUES === //
     double time;
@@ -128,9 +134,6 @@ private:
     bool dayLock;
     bool escaping;
     ImGuiIO *io;
-    std::vector<Notification> notifications;
-    std::vector<Notification> mails;
-    std::vector<Item> items;
     std::vector<Ramp> ramps;
 
     bool tabPressed;

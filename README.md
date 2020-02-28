@@ -46,4 +46,3 @@ The well has a buttload of money in it. So make full use of it! However, the ric
 ## Romance! (maybe)
 
 See a girl you like? Flirt with her! I might implement that one day.
-

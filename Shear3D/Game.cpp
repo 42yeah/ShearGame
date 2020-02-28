@@ -15,7 +15,6 @@
 
 
 Game::Game(GLFWwindow *window, ImGuiIO *io) : nativeWindow(window), reloadKeyPressed(false), firstMouse(true), tabPressed(false),  io(io) {
-    init();
 }
 
 void Game::updateWindowSize() { 
@@ -29,6 +28,7 @@ void Game::updateWindowSize() {
 }
 
 void Game::init() {
+    glfwSetInputMode(nativeWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     updateWindowSize();
     ground = genereateGround();
     rect = generateTestRect();
@@ -51,9 +51,7 @@ void Game::init() {
     loadMonsters("Assets/monsterlist", "Assets/festive.monsterlist");
     
     notifications.push_back(Notification("Story", "Your father just commited suicide after losing a bet worth of 1000 eggs with the local rich man.\nIt is now up to you to pay the debt.\nLuckily, you have a well which spurts infinite amount of gold coins at your backyard.\nWhen you get enough eggs, find the rich man,\nand fullfill your side of the deal!", false, -1.0f));
-    io->WantSaveIniSettings = false;
-    io->IniFilename = nullptr;
-    
+    notifications.push_back(Notification("Introduction", "Press Tab to summon cursor.\nPress F5 to save the game.", false, -1.0f));
     steaks = 0;
     stamina = 4.0f;
     hunger = 4.0f;
@@ -1130,6 +1128,143 @@ void Game::refresh() {
 
 bool Game::isFestival() {
     return day % 7 == 0;
+}
+
+// Ah, the great game saving function. Lots of stuffs to save!
+void Game::save() {
+    FILE *file = fopen("save.shear3d", "wb");
+    // Additive Time,
+    fwrite(&additiveTime, sizeof(double), 1, file);
+    int n = (int) objects.size();
+    fwrite(&n, sizeof(int), 1, file);
+    for (int i = 0; i < objects.size(); i++) {
+        fwrite(&objects[i].falls, sizeof(int), 1, file);
+        fwrite(&objects[i].destroyed, sizeof(bool), 1, file);
+        n = (int) objects[i].storage.size();
+        fwrite(&n, sizeof(int), 1, file);
+        for (int j = 0; j < objects[i].storage.size(); j++) {
+            fwrite(&objects[i].storage[j], sizeof(Item), 1, file);
+        }
+    }
+    for (int i = 0; i < monsters.size(); i++) {
+        fwrite(&monsters[i].position, sizeof(glm::vec3), 1, file);
+        fwrite(&monsters[i].mugCounter, sizeof(int), 1, file);
+    }
+    fwrite(&day, sizeof(int), 1, file);
+    fwrite(&hunger, sizeof(float), 1, file);
+    fwrite(&stamina, sizeof(float), 1, file);
+    fwrite(&jailDays, sizeof(int), 1, file);
+    fwrite(&eggCount, sizeof(int), 1, file);
+    fwrite(&eggPrice, sizeof(float), 1, file);
+    fwrite(&steakPrice, sizeof(float), 1, file);
+    fwrite(&steaks, sizeof(int), 1, file);
+    fwrite(&steakCounter, sizeof(float), 1, file);
+    fwrite(&axed, sizeof(bool), 1, file);
+    fwrite(&rodDay, sizeof(int), 1, file);
+    fwrite(&rented, sizeof(bool), 1, file);
+    fwrite(&latched, sizeof(bool), 1, file);
+    fwrite(&goldenLatched, sizeof(int), 1, file);
+    fwrite(&hallucinating, sizeof(float), 1, file);
+    fwrite(&luciferiumFlipper, sizeof(float), 1, file);
+    fwrite(&stuck, sizeof(bool), 1, file);
+    fwrite(&camera, sizeof(Camera), 1, file);
+
+    n = (int) notifications.size();
+    fwrite(&n, sizeof(int), 1, file);
+    for (int i = 0; i < notifications.size(); i++) {
+        Notification &notification = notifications[i];
+        fwrite(&notification.live, sizeof(bool), 1, file);
+        fwrite(&notification.aliveTime, sizeof(float), 1, file);
+        n = (int) notification.title.size();
+        fwrite(&n, sizeof(int), 1, file);
+        fwrite(&notification.title[0], sizeof(char), n, file);
+        n = (int) notification.content.size();
+        fwrite(&n, sizeof(int), 1, file);
+        fwrite(&notification.content[0], sizeof(char), n, file);
+    }
+//    mails;
+    n = (int) items.size();
+    fwrite(&n, sizeof(int), 1, file);
+    for (int i = 0; i < items.size(); i++) {
+        fwrite(&items[i], sizeof(Item), 1, file);
+    }
+    fflush(file);
+    fclose(file);
+    notifications.push_back(Notification("Saved", "Game has been saved.", true, 10.0f));
+}
+
+void Game::load() {
+    FILE *file = fopen("save.shear3d", "r");
+    if (!file) {
+        notifications.push_back(Notification("Load", "The game could not be loaded.", true, 10.0f));
+        return;
+    }
+    fread(&additiveTime, sizeof(double), 1, file);
+    int n; // objects.size()
+    fread(&n, sizeof(int), 1, file);
+    for (int i = 0; i < n; i++) {
+        fread(&objects[i].falls, sizeof(int), 1, file);
+        fread(&objects[i].destroyed, sizeof(bool), 1, file);
+        int m;
+        fread(&m, sizeof(int), 1, file);
+        // m = object.storage.size
+        for (int j = 0; j < m; j++) {
+            Item item;
+            fread(&item, sizeof(Item), 1, file);
+            objects[i].addItem(item);
+        }
+    }
+    for (int i = 0; i < monsters.size(); i++) {
+        fread(&monsters[i].position, sizeof(glm::vec3), 1, file);
+        fread(&monsters[i].mugCounter, sizeof(int), 1, file);
+    }
+    fread(&day, sizeof(int), 1, file);
+    fread(&hunger, sizeof(float), 1, file);
+    fread(&stamina, sizeof(float), 1, file);
+    fread(&jailDays, sizeof(int), 1, file);
+    fread(&eggCount, sizeof(int), 1, file);
+    fread(&eggPrice, sizeof(float), 1, file);
+    fread(&steakPrice, sizeof(float), 1, file);
+    fread(&steaks, sizeof(int), 1, file);
+    fread(&steakCounter, sizeof(float), 1, file);
+    fread(&axed, sizeof(bool), 1, file);
+    fread(&rodDay, sizeof(int), 1, file);
+    fread(&rented, sizeof(bool), 1, file);
+    fread(&latched, sizeof(bool), 1, file);
+    fread(&goldenLatched, sizeof(int), 1, file);
+    fread(&hallucinating, sizeof(float), 1, file);
+    fread(&luciferiumFlipper, sizeof(float), 1, file);
+    fread(&stuck, sizeof(bool), 1, file);
+    fread(&camera, sizeof(Camera), 1, file);
+
+    // n = notifications.size()
+    fread(&n, sizeof(int), 1, file);
+    notifications.clear();
+    for (int i = 0; i < n; i++) {
+        int m;
+        Notification notification;
+        fread(&notification.live, sizeof(bool), 1, file);
+        fread(&notification.aliveTime, sizeof(float), 1, file);
+        fread(&m, sizeof(int), 1, file);
+        char tmp[1024] = { 0 };
+        fread(tmp, sizeof(char), m, file);
+        notification.title = std::string(tmp);
+        bzero(tmp, 1024 * sizeof(char));
+        fread(&m, sizeof(int), 1, file);
+        fread(tmp, sizeof(char), m, file);
+        notification.content = std::string(tmp);
+        notifications.push_back(notification);
+    }
+//    mails;
+    // n = items.size()
+    items.clear();
+    fread(&n, sizeof(int), 1, file);
+    for (int i = 0; i < n; i++) {
+        Item item;
+        fread(&item, sizeof(Item), 1, file);
+        items.push_back(item);
+    }
+    fclose(file);
 }
 
 
