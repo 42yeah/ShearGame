@@ -19,7 +19,7 @@ out vec4 color;
 
 vec2 rand2d(vec2 uv) {
     return -1.0 + 2.0 * fract(sin(vec2(dot(uv, vec2(12.9898, 78.233)),
-                                       dot(uv, vec2(31.516, 124.543)))) * 1000000.0);
+                                       dot(uv, vec2(31.516, 124.543)))) * 43758.5453);
 }
 
 float perlin(vec2 uv) {
