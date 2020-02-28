@@ -31,6 +31,8 @@ and start playing!
 
 __NOTE__: As I am using relative path to load files, (at least) in macOS this is the only way to launch Shear3D. You cannot double click on it, because in this way it won't be able to load other files. So yeah! `./Shear3D` only! Also you might need to codesign the executable.
 
+__NOTE II__: You can run this by double clicking on Windows! Yay!
+
 ## The story
 
 Your father just commited suicide after losing a bet worth of 1000 eggs with the local rich man. It is now up to you to pay the debt. Luckily, you have a well which spurts infinite amount of gold coins at your backyard. When you get enough eggs, find the rich man, and fullfill your side of the deal!
