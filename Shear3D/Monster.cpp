@@ -879,6 +879,39 @@ void Monster::interact(Game *game) {
             }
             break;
             
+        case 10:
+            switch (rampIndex) {
+                case 0:
+                    switch (conversationId) {
+                        case 0:
+                            ImGui::Text("Zzz... What do you want? Are you sick?");
+                            if (ImGui::Button("Yeah!")) {
+                                conversationId = 1;
+                            }
+                            break;
+                            
+                        case 1:
+                            ImGui::Text("Alright, come over to this bed.\nLet me see...");
+                            break;
+                    }
+                    break;
+                    
+                case 1:
+                    switch (conversationId) {
+                        case 0:
+                            ImGui::Text("Hello. Do you feel well?");
+                            if (ImGui::Button("Nope.")) {
+                                conversationId = 1;
+                            }
+                            break;
+                            
+                        case 1:
+                            ImGui::Text("OK. Now lie on this bed for awhile...");
+                            break;
+                    }
+                    break;
+            }
+            
         default:
             break;
     }
@@ -909,6 +942,9 @@ void Monster::interact(Game *game) {
             (id == 5 && (rampIndex == 0 || rampIndex == 21) && conversationId == 2) ||
             (id == 9 && rampIndex == 0 && conversationId == 1)) {
             game->jail("You were found mugging.");
+        }
+        if (id == 10 && conversationId == 1) {
+            game->hospital("You told the doctor you were sick.");
         }
         texId = id;
         game->interactingMonster = nullptr;
