@@ -72,6 +72,7 @@ void Game::init() {
     steakPrice = 22.0f;
     hallucinating = 0.0f;
     luciferiumFlipper = 1.0f;
+    stuck = true;
 }
 
 void Game::clear() {

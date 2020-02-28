@@ -122,21 +122,26 @@ void Object::interact(Game *game) {
         case CHEST:
         {
             if (chestId == 4) {
-                game->notifications.push_back(Notification("Fails", "This chest won't open.", true, 10.0f));
-                game->interactingObject = nullptr;
-                break;
+                if (game->getQuantityOf(AXE) <= 0 && game->stuck) {
+                    game->notifications.push_back(Notification("Fails", "This chest won't open.", true, 10.0f));
+                    game->interactingObject = nullptr;
+                    break;
+                } else if (game->getQuantityOf(AXE) >= 1 && game->stuck) {
+                    game->notifications.push_back(Notification("Chop", "You chop the upper half of the chest away using the axe!\nThe chest is no longer stuck.", true, 10.0f));
+                    game->stuck = false;
+                }
             }
             bool stealing = false;
             for (int i = 0; i < game->monsters.size() && chestId != 4; i++) {
                 // That's a very large distance!
                 if (glm::distance(game->camera.position, game->monsters[i].position) <= 10.0f) {
-//                    game->jail("You were found stealing.");
+                    game->jail("You were found stealing.");
                     stealing = true;
                     break;
                 }
             }
             if (stealing) { // Won't even let you see the UI!
-//                game->interactingObject = nullptr;
+                game->interactingObject = nullptr;
             }
             if (chestId == 3) {
                 syncItemCount(STEAK, game->steaks);

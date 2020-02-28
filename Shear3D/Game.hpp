@@ -115,6 +115,7 @@ private:
     int goldenLatched;
     float hallucinating;
     float luciferiumFlipper;
+    bool stuck;
     
     // === LOW VALUES === //
     double time;
