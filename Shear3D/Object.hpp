@@ -11,6 +11,7 @@
 
 #include <glm/glm.hpp>
 #include "Model.hpp"
+#include "Item.hpp"
 
 
 class Game;
@@ -43,6 +44,8 @@ public:
     int wellCounter;
     int falls;
     bool destroyed;
+    
+    std::vector<Item> storage;
 };
 
 #endif /* Object_hpp */

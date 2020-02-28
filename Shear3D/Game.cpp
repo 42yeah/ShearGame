@@ -70,6 +70,12 @@ void Game::init() {
     goldenLatched = 0;
     
     addItem(Item(FISH, 1));
+    addItem(Item(EGG, 50));
+    addItem(Item(COIN, 50));
+    addItem(Item(LOG, 5));
+    addItem(Item(AXE, 1));
+    addItem(Item(RADIOACTIVE_FISH, 1));
+    addItem(Item(URANIUM_BAR, 1));
 }
 
 void Game::clear() {
@@ -806,6 +812,9 @@ void Game::renderGUI() {
                     i--;
                 }
             }
+            if (i % 3 < 2) {
+                ImGui::SameLine();
+            }
         }
         ImGui::End();
         
@@ -849,7 +858,7 @@ void Game::renderGUI() {
         interacting = false;
         flipper = 1.0f;
     }
-//    ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
 }
 
 void Game::jail(std::string reason) {
