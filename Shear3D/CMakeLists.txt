@@ -18,7 +18,10 @@ endmacro(configure_files)
 
 # Include the includes
 include_directories(${PROJECT_SOURCE_DIR}/Includes)
-add_executable(Shear3D main.cpp tests.cpp Program.cpp Pass.cpp Game.cpp Camera.cpp Model.cpp Texture.cpp Object.cpp Monster.cpp Item.cpp)
+add_executable(Shear3D main.cpp tests.cpp Program.cpp Pass.cpp Game.cpp Camera.cpp Model.cpp Texture.cpp Object.cpp Monster.cpp Item.cpp Menu.cpp)
 
 target_link_libraries(Shear3D ImGui glfw)
+if (WIN32)
+    target_link_libraries(Shear3D -static)
+endif()
 file(COPY ${PROJECT_SOURCE_DIR}/Assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
