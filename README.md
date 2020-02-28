@@ -46,3 +46,9 @@ The well has a buttload of money in it. So make full use of it! However, the ric
 ## Romance! (maybe)
 
 See a girl you like? Flirt with her! I might implement that one day.
+
+## Alright, I've been playing it for a while now, but I've absolutely no idea what I am playing
+
+Look, the place you first spawn is your home, and in your backyard there's a well which has infinite coins. Use the right mouse button to interact with all sorts of objects, chests, trees, wells, peoples, etc. If you are getting money from the well, you better be quick, as time passes quickly in the well. With those money you can go to the steak store, which is the first house on your left after you leave your house. And you can go to the square to buy eggs. Stand on the bed to sleep and restore your stamina.
+
+When you've collected 1000 eggs, talk to the rich man in the house (who obviously has a very large mansion) during his office hours. And then you will win the game!
