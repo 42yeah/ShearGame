@@ -184,6 +184,9 @@ void Game::update() {
         day++;
         dayLock = true;
         notifications.push_back(Notification("A New Day", "A new day has begun. It is now day " + std::to_string(day) + ". ", true, 10.0f));
+        if (isFestival()) {
+            notifications.push_back(Notification("Festival!", "You smell festival in the air.", true, 10.0f));
+        }
         refresh();
     }
     if (standarized > 0.1f) {
@@ -306,7 +309,7 @@ void Game::update() {
     }
 
     for (int i = 0; i < monsters.size(); i++) {
-        monsters[i].update(deltaTime, standarized, day, objects);
+        monsters[i].update(deltaTime, standarized, day, objects, isFestival());
     }
 }
 
@@ -863,7 +866,11 @@ void Game::renderGUI() {
         interactingObject = nullptr;
     }
     if (interactingMonster && glm::distance(interactingMonster->position, camera.position) <= 4.0f) {
-        interactingMonster->interact(this);
+        if (isFestival()) {
+            interactingMonster->festiveInteract(this);
+        } else {
+            interactingMonster->interact(this);
+        }
         interacting = true;
     } else {
         interactingMonster = nullptr;
@@ -917,6 +924,7 @@ void Game::hospital(std::string reason) {
     monsters[10].destinationRamp = nullptr;
     stamina = 3.0f;
     hunger = 3.0f;
+    hallucinating = 0.0f;
     // Find coin
     for (int i = 0; i < items.size(); i++) {
         if (items[i].type == EGG) {
@@ -1101,6 +1109,12 @@ void Game::refresh() {
     steaks = 0;
     steakCounter = priceDistrib(dev);
     
+    if (isFestival()) {
+        distrib = std::uniform_int_distribution<>(2, 6);
+        steaks = distrib(dev);
+        steakCounter = 10000.0f; // No new steaks during festival
+    }
+    
     rented = false;
     int numTacos = getQuantityOf(TACO);
     if (numTacos > 0) {
@@ -1112,6 +1126,10 @@ void Game::refresh() {
     for (int i = 0; i < monsters.size(); i++) {
         monsters[i].mugCounter--;
     }
+}
+
+bool Game::isFestival() {
+    return day % 7 == 0;
 }
 
 

@@ -26,23 +26,39 @@ void Monster::render(Program &program) {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Monster::update(float dt, float time, int day, std::vector<Object> &objects) {
-    if (ramps.size() <= 0 || begging) {
+void Monster::update(float dt, float time, int day, std::vector<Object> &objects, bool festive) {
+    if (ramps.size() <= 0 || festiveRamps.size() <= 0 || begging) {
         return;
     }
     Ramp *prevRamp = nullptr, currentRamp;
-    for (int i = 0; i < ramps.size(); i++) {
-        if (ramps[i].time >= time) {
-            currentRamp = ramps[i];
-            if (i <= 0) {
-                rampIndex = -1;
+    if (!festive) {
+        for (int i = 0; i < ramps.size(); i++) {
+            if (ramps[i].time >= time) {
+                currentRamp = ramps[i];
+                if (i <= 0) {
+                    rampIndex = -1;
+                    break;
+                }
+                rampIndex = i - 1;
+                prevRamp = &ramps[i - 1];
                 break;
             }
-            rampIndex = i - 1;
-            prevRamp = &ramps[i - 1];
-            break;
+        }
+    } else {
+        for (int i = 0; i < festiveRamps.size(); i++) {
+            if (festiveRamps[i].time >= time) {
+                currentRamp = festiveRamps[i];
+                if (i <= 0) {
+                    rampIndex = -1;
+                    break;
+                }
+                rampIndex = i - 1;
+                prevRamp = &festiveRamps[i - 1];
+                break;
+            }
         }
     }
+    
     // interpolate
 //    float t = (time - prevRamp.time) / (currentRamp.time - prevRamp.time);
 //    destination = glm::mix(prevRamp.destination, currentRamp.destination, t);
@@ -1077,7 +1093,96 @@ void Monster::interact(Game *game) {
     ImGui::End();
 }
 
-
-
-
-
+void Monster::festiveInteract(Game *game) { 
+    game->escape(game->escaping = true);
+    ImGui::SetNextWindowSize(ImVec2{ 400.0f, 300.0f }, ImGuiCond_FirstUseEver);
+    ImGui::Begin("Dialogue");
+    switch (id) {
+        case 1:
+            switch (rampIndex) {
+                case 0:
+                    ImGui::Text("Zzz...");
+                    break;
+                    
+                case 5:
+                case 6:
+                    switch (conversationId) {
+                        case 0:
+                            if (game->eggCount > 0) {
+                                ImGui::Text("Hey you. Today's eggs are on the house.\nEnjoy!");
+                                if (ImGui::Button("Take the eggs")) {
+                                    game->addItem(Item(EGG, game->eggCount));
+                                    game->eggCount = 0;
+                                    conversationId = 1;
+                                }
+                            } else {
+                                ImGui::Text("Alright. I gave you the egg, now get out.");
+                            }
+                            break;
+                            
+                        case 1:
+                            ImGui::Text("Yeah. Now get out.");
+                            break;
+                    }
+                    break;
+                    
+                default:
+                    ImGui::Text("You were wished having a good time\nduring the festival.");
+                    break;
+            }
+            break;
+            
+        case 2:
+            switch (rampIndex) {
+                case 0:
+                    ImGui::Text("Zzz...");
+                    break;
+                    
+                case 9:
+                case 10:
+                    switch (conversationId) {
+                        case 0:
+                            if (game->steaks > 0) {
+                                ImGui::Text("Here. Even though we don't always see eye to eye (ha!)\nTake these free steaks. It's a festival tribute.\nI bought a lot from the chef for today!");
+                                if (ImGui::Button("Take the steaks")) {
+                                    game->addItem(Item(STEAK, game->steaks));
+                                    game->steaks = 0;
+                                    conversationId = 1;
+                                }
+                            } else {
+                                ImGui::Text("Well, no steaks left!\nHave a good festival, whatever this is.");
+                            }
+                            break;
+                            
+                        case 1:
+                            ImGui::Text("Yeah yeah. Bye!");
+                            break;
+                    }
+                    
+                    break;
+                    
+                default:
+                    ImGui::Text("You were wished having a good time\nduring the festival.");
+                    break;
+            }
+            break;
+            
+        default:
+            switch (rampIndex) {
+                case 0:
+                    ImGui::Text("Zzz...");
+                    break;
+                    
+                default:
+                    ImGui::Text("You were wished having a good time\nduring the festival.");
+                    break;
+            }
+            break;
+    }
+    
+    if (ImGui::Button("Try to leave") || destinationRamp != game->interactingMonsterRamp) {
+        texId = id;
+        game->interactingMonster = nullptr;
+    }
+    ImGui::End();
+}

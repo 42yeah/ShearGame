@@ -71,6 +71,7 @@ private:
     void addItemToChest(int id, Item item);
     int getQuantityOf(ItemType type);
     void refresh();
+    bool isFestival();
 
     // === PASSES === //
     Program renderProgram;

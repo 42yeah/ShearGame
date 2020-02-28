@@ -29,7 +29,7 @@ public:
     Monster() {}
     Monster(Texture *tex, int id, glm::vec3 position, GLuint VAO);
     
-    void update(float dt, float time, int day, std::vector<Object> &objects);
+    void update(float dt, float time, int day, std::vector<Object> &objects, bool festive);
     void pathfind(glm::vec3 destination, std::vector<Object> &objects);
     
     Object *lookup(glm::vec3 pos, std::vector<Object> &objects);
@@ -37,6 +37,7 @@ public:
     void render(Program &program);
     
     void interact(Game *game);
+    void festiveInteract(Game *game);
 
     std::vector<Ramp> ramps;
     std::vector<Ramp> festiveRamps;
