@@ -1263,7 +1263,7 @@ void Game::load() {
         char tmp[1024] = { 0 };
         fread(tmp, sizeof(char), m, file);
         notification.title = std::string(tmp);
-        bzero(tmp, 1024 * sizeof(char));
+        memset(tmp, 0, 1024 * sizeof(char));
         fread(&m, sizeof(int), 1, file);
         fread(tmp, sizeof(char), m, file);
         notification.content = std::string(tmp);
