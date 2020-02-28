@@ -54,6 +54,7 @@ void Game::init() {
     io->WantSaveIniSettings = false;
     io->IniFilename = nullptr;
     
+    steaks = 0;
     stamina = 4.0f;
     hunger = 4.0f;
     bedCounter = 1.0f;
@@ -68,14 +69,9 @@ void Game::init() {
     rodDay = -1;
     latched = false;
     goldenLatched = 0;
-    
-    addItem(Item(FISH, 1));
-    addItem(Item(EGG, 50));
-    addItem(Item(COIN, 50));
-    addItem(Item(LOG, 5));
-    addItem(Item(AXE, 1));
-    addItem(Item(RADIOACTIVE_FISH, 1));
-    addItem(Item(URANIUM_BAR, 1));
+    steakPrice = 22.0f;
+    hallucinating = 0.0f;
+    luciferiumFlipper = 1.0f;
 }
 
 void Game::clear() {
@@ -119,6 +115,7 @@ void Game::render() {
     postEffectProgram.use();
     glUniform1f(postEffectProgram.loc("aspect"), aspect);
     glUniform1f(postEffectProgram.loc("bedCounter"), bedCounter);
+    glUniform1f(postEffectProgram.loc("hallucinating"), hallucinating);
     renderPass.pass(postEffectProgram.loc("tex"), 0);
     glBindVertexArray(rect);
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -132,6 +129,7 @@ void Game::update() {
     deltaTime = (float) now - time;
 
     deltaTime *= flipper;
+    deltaTime *= luciferiumFlipper;
     // === GAME RELATED UPDATES === //
     if (state == SLEEPING) {
         bedCounter -= deltaTime * 0.2f;
@@ -156,6 +154,8 @@ void Game::update() {
         stamina -= deltaTime * 0.008f;
         hunger -= deltaTime * 0.02f;
     }
+    hallucinating -= deltaTime;
+    hallucinating = glm::max(0.0f, hallucinating);
     
     if (hunger > 5.5f) {
         hospital("You are way too full, your stomache bursted.");
@@ -550,6 +550,7 @@ void Game::addObject(int id, glm::vec3 pos, float rotY) {
     off = glm::rotate(off, rotY, glm::vec3(0.0f, 1.0f, 0.0f));
     ObjectType type = PASSABLE;
     ObstacleType obsType = NOPE;
+    static int chestId = 0; // Just for recording of chestId. I know my code is ugly!
     switch (id) {
         case 0: // Brick
         case 4: // Well
@@ -589,6 +590,9 @@ void Game::addObject(int id, glm::vec3 pos, float rotY) {
             break;
     }
     Object object(pos, &models[id], off, type, obsType);
+    if (id == 7) {
+        object.chestId = chestId++;
+    }
     objects.push_back(object);
 }
 
@@ -801,15 +805,24 @@ void Game::renderGUI() {
 #else
         ImGui::SetNextWindowPos(ImVec2{ windowSize.x - 310.0f, windowSize.y - 110.0f }, ImGuiCond_FirstUseEver);
 #endif
-        
         ImGui::SetNextWindowSize(ImVec2{ 300.0f, 100.0f }, ImGuiCond_FirstUseEver);
         ImGui::Begin("Inventory");
         for (int i = 0; i < items.size(); i++) {
             if (ImGui::Button(items[i].getItemName(true).c_str())) {
-                items[i].invoke(this);
-                if (items[i].quantity <= 0) {
+                if (!interactingObject || (interactingObject && interactingObject->obstacleType != CHEST)) {
+                    items[i].invoke(this);
+                    if (items[i].quantity <= 0) {
+                        items.erase(items.begin() + i, items.begin() + i + 1);
+                        i--;
+                    }
+                } else {
+                    interactingObject->addItem(items[i]);
                     items.erase(items.begin() + i, items.begin() + i + 1);
-                    i--;
+                    // Donating steaks?
+                    if ((interactingObject->chestId == 3 && items[i].type == STEAK) ||
+                        (interactingObject->chestId == 5 && items[i].type == TACO)) {
+                        steaks += items[i].quantity;
+                    }
                 }
             }
             if (i % 3 < 2) {
@@ -858,7 +871,7 @@ void Game::renderGUI() {
         interacting = false;
         flipper = 1.0f;
     }
-    ImGui::ShowDemoWindow();
+//    ImGui::ShowDemoWindow();
 }
 
 void Game::jail(std::string reason) {
@@ -942,6 +955,18 @@ void Game::addItem(Item item) {
     }
 }
 
+void Game::addItemToChest(int id, Item item) {
+    for (int i = 0; i < objects.size(); i++) {
+        if (objects[i].obstacleType != CHEST) {
+            continue;
+        }
+        if (objects[i].chestId == id) {
+            objects[i].addItem(item);
+            break;
+        }
+    }
+}
+
 int Game::getQuantityOf(ItemType type) {
     for (int i = 0; i < items.size(); i++) {
         if (items[i].type == type) {
@@ -953,8 +978,119 @@ int Game::getQuantityOf(ItemType type) {
 
 void Game::refresh() {
     std::random_device dev;
-    std::uniform_int_distribution<> distrib(1, 40);
+    std::uniform_int_distribution<> distrib(1, 3);
     std::uniform_real_distribution<> priceDistrib(1.0f, 10.0f);
+    for (int i = 0; i < objects.size(); i++) {
+        if (objects[i].obstacleType != CHEST) {
+            continue;
+        }
+        Object &chest = objects[i];
+        switch (chest.chestId) {
+            case 0:
+                // Leftover steaks & some money
+                chest.storage.clear();
+                chest.addItem(Item(COIN, glm::round(steakPrice * 6.0f)));
+                chest.addItem(Item(LEFTOVER_STEAK, steaks));
+                break;
+                
+            case 1:
+                // Some tacos, and all tacos becomes rotten tacos
+                chest.addItem(Item(ROTTEN_TACO, glm::max(0, chest.getQuantityOf(TACO) - 2)));
+                distrib = std::uniform_int_distribution<>(1, 2);
+                chest.addItem(Item(TACO, distrib(dev)));
+                break;
+                
+            case 2:
+                // Laundry
+                chest.storage.clear();
+                distrib = std::uniform_int_distribution<>(1, 5);
+                chest.addItem(Item(SHIRT, distrib(dev)));
+                break;
+                
+            case 3: // The steak chest
+                break;
+                
+            case 4: // The main character chest
+                break;
+                
+            case 5: // The taco chest
+                break;
+                
+            case 6:
+            case 8:
+            case 9: // The hotel chests
+                chest.storage.clear();
+                distrib = std::uniform_int_distribution<>(1, 2);
+                chest.addItem(Item(SOAP, distrib(dev)));
+                break;
+                
+            case 7:
+                // Letters
+                chest.storage.clear();
+                distrib = std::uniform_int_distribution<>(1, 5);
+                chest.addItem(Item(LETTER_NOT_YOURS, distrib(dev)));
+                break;
+                
+            case 10: // Lumberjack's house
+                chest.storage.clear();
+                distrib = std::uniform_int_distribution<>(5, 10);
+                chest.addItem(Item(LOG, distrib(dev)));
+                distrib = std::uniform_int_distribution<>(0, 100);
+                chest.addItem(Item(EGG, distrib(dev)));
+                break;
+                
+            case 11: // Clerk's house
+                chest.storage.clear();
+                distrib = std::uniform_int_distribution<>(1, 100);
+                chest.addItem(Item(COIN, distrib(dev)));
+                chest.addItem(Item(SHIRT, 1));
+                break;
+                
+            case 12: // Egg girl's house
+                if (eggCount == 0) {
+                    chest.addItem(Item(COIN, (int) eggPrice));
+                }
+                break;
+                
+            case 13: // Doctor's
+                distrib = std::uniform_int_distribution<>(-3, 5);
+                chest.addItem(Item(CAFFEINE_SHOT, distrib(dev)));
+                chest.addItem(Item(MULTIVITAMIN, distrib(dev)));
+                distrib = std::uniform_int_distribution<>(-5, 5);
+                chest.addItem(Item(LSD, distrib(dev)));
+                chest.addItem(Item(DMT, distrib(dev)));
+                distrib = std::uniform_int_distribution<>(-10, 5);
+                chest.addItem(Item(LUCIFERIUM, distrib(dev)));
+                break;
+                
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 19:
+            case 20:
+            case 21:
+            case 22:
+            case 23: // Rich man's house
+                chest.storage.clear();
+                distrib = std::uniform_int_distribution<>(1, 500);
+                chest.addItem(Item(COIN, distrib(dev)));
+                distrib = std::uniform_int_distribution<>(1, 200);
+                chest.addItem(Item(BOND, distrib(dev)));
+                break;
+                
+            case 18: // Old man's house
+                distrib = std::uniform_int_distribution<>(-10, 10);
+                chest.addItem(Item(COIN, distrib(dev)));
+                break;
+                
+            case 24: // Fisherman's house?
+                distrib = std::uniform_int_distribution<>(-10, 10);
+                chest.addItem(Item(FISH, distrib(dev)));
+                break;
+        }
+    }
+    distrib = std::uniform_int_distribution<>(1, 40);
     eggCount = distrib(dev);
     eggPrice = glm::round(eggCount * priceDistrib(dev));
 

@@ -32,6 +32,10 @@ public:
     void render(Program &program);
     
     void interact(Game *game);
+    void addItem(Item item);
+    int getQuantityOf(ItemType type);
+    
+    void syncItemCount(ItemType type, int count);
 
     glm::vec3 pos;
     glm::mat4 modelMat;
@@ -45,6 +49,7 @@ public:
     int falls;
     bool destroyed;
     
+    int chestId;
     std::vector<Item> storage;
 };
 

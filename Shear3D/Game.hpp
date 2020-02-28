@@ -68,6 +68,7 @@ private:
     void jail(std::string reason);
     void hospital(std::string reason);
     void addItem(Item item);
+    void addItemToChest(int id, Item item);
     int getQuantityOf(ItemType type);
     void refresh();
 
@@ -112,6 +113,8 @@ private:
     bool rented;
     bool latched;
     int goldenLatched;
+    float hallucinating;
+    float luciferiumFlipper;
     
     // === LOW VALUES === //
     double time;

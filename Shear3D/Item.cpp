@@ -67,6 +67,50 @@ std::string Item::getItemName(bool includesQuantity) {
         case GOLDEN_FISHING_TROPHY:
             ret = "+golden fishing trophy+";
             break;
+            
+        case SHIRT:
+            ret = "shirt";
+            break;
+            
+        case LETTER_NOT_YOURS:
+            ret = "someone else's letter";
+            break;
+            
+        case LEFTOVER_STEAK:
+            ret = "leftover steak";
+            break;
+            
+        case SOAP:
+            ret = "soap";
+            break;
+            
+        case CAFFEINE_SHOT:
+            ret = "caffeine shot";
+            break;
+            
+        case MULTIVITAMIN:
+            ret = "multivitamin";
+            break;
+            
+        case LSD:
+            ret = "LSD";
+            break;
+            
+        case DMT:
+            ret = "DMT";
+            break;
+            
+        case CYANIDE:
+            ret = "cyanide";
+            break;
+            
+        case LUCIFERIUM:
+            ret = "luciferium";
+            break;
+            
+        case BOND:
+            ret = "bond";
+            break;
     }
     if (includesQuantity) {
         ret += " x" + std::to_string(quantity);
@@ -81,6 +125,7 @@ void Item::invoke(Game *game) {
     std::string msg;
     switch (type) {
         case STEAK:
+        case LEFTOVER_STEAK:
             quantity--;
             distrib = std::uniform_int_distribution<>(1, 4);
             outcome = distrib(dev);
@@ -112,6 +157,11 @@ void Item::invoke(Game *game) {
                 msg += "\nHowever, you ate without chair. That's uncomfortable.";
                 game->stamina -= 0.2f;
                 game->hunger -= 0.15f;
+            }
+            if (type == LEFTOVER_STEAK) {
+                msg += "\nIt is also leftover, and it feels cold.";
+                game->stamina -= 0.5f;
+                game->hunger -= 0.25f;
             }
             game->notifications.push_back(Notification("Itme used", msg.c_str(), true, 10.0f));
             break;
@@ -206,6 +256,80 @@ void Item::invoke(Game *game) {
             msg = "You ate the golden fishing trophy. It's too big! You can't swallow! Feck!";
             game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
             game->goldenLatched = 1000;
+            break;
+            
+        case SHIRT:
+            quantity--;
+            game->hunger -= 0.5f;
+            game->stamina -= 2.0f;
+            msg = "You roll the shirt into a ball and swallow it whole.\nIt's smelly! You throw up.";
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
+            break;
+            
+        case LETTER_NOT_YOURS:
+        case BOND:
+            quantity--;
+            game->hunger += 0.01f;
+            msg = "You ate the " + getItemName() + ". It feels like a wet goop.";
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
+            break;
+            
+        case SOAP:
+            quantity--;
+            game->hunger += 0.05f;
+            msg = "You ate the soap. It's crunchy! And your mouth smells good.";
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
+            break;
+            
+        case CAFFEINE_SHOT:
+            quantity--;
+            game->stamina -= 3.0f;
+            msg = "You don't actually know how to inject the caffeine shot.\nSo you eat it instead. The needle hurts!";
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
+            break;
+            
+        case MULTIVITAMIN:
+            quantity--;
+            game->stamina += 0.5f;
+            msg = "You swallowed the multivitamin.";
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
+            break;
+            
+        case LSD:
+        case DMT:
+            quantity--;
+            game->stamina -= 1.0f;
+            game->hallucinating = 100.0f;
+            msg = "You ate the " + getItemName() + ". Oh wow! Everything looks so cosmic!";
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
+            break;
+            
+        case CYANIDE:
+            game->stamina -= 40.0f;
+            msg = "You ate cyanide. It smells like almond!";
+            break;
+            
+        case LUCIFERIUM:
+            game->stamina = 4.0f;
+            game->hunger = 4.0f;
+            game->luciferiumFlipper *= 1.5f;
+            msg = "You ate the luciferium. You never felt so alive!";
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
+            break;
+            
+        case FISH:
+            quantity--;
+            game->hunger += 1.5f;
+            msg = "You ate the fish. It's raw, and it's bony.";
+            if (game->state != SITTING) {
+                msg += "\nHowever, you ate without chair. That's uncomfortable.";
+                game->stamina -= 0.5f;
+            }
+            if (game->state == SLEEPING) {
+                msg += "\nYou ate while you sleep on the bed. A bone latches onto your throat!\nYou can't breathe!";
+                game->stamina -= 4.0f;
+            }
+            game->notifications.push_back(Notification("Item used", msg, true, 10.0f));
             break;
     }
     if (game->latched) {

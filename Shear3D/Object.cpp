@@ -120,12 +120,99 @@ void Object::interact(Game *game) {
             break;
             
         case CHEST:
-            // TODO:
-            game->interactingObject = nullptr;
+        {
+            if (chestId == 4) {
+                game->notifications.push_back(Notification("Fails", "This chest won't open.", true, 10.0f));
+                game->interactingObject = nullptr;
+                break;
+            }
+            bool stealing = false;
+            for (int i = 0; i < game->monsters.size() && chestId != 4; i++) {
+                // That's a very large distance!
+                if (glm::distance(game->camera.position, game->monsters[i].position) <= 10.0f) {
+//                    game->jail("You were found stealing.");
+                    stealing = true;
+                    break;
+                }
+            }
+            if (stealing) { // Won't even let you see the UI!
+//                game->interactingObject = nullptr;
+            }
+            if (chestId == 3) {
+                syncItemCount(STEAK, game->steaks);
+            } else if (chestId == 5) {
+                syncItemCount(TACO, game->steaks);
+            } else if (chestId == 12) {
+                syncItemCount(EGG, game->eggCount);
+            }
+            game->escape(game->escaping = true);
+#ifdef __APPLE__
+            ImGui::SetNextWindowPos(ImVec2{ game->windowSize.x * 0.5f - 620.0f, game->windowSize.y * 0.5f - 210.0f }, ImGuiCond_FirstUseEver);
+#else
+            ImGui::SetNextWindowPos(ImVec2{ game->windowSize.x - 620.0f, game->windowSize.y - 210.0f }, ImGuiCond_FirstUseEver);
+#endif
+            ImGui::SetNextWindowSize(ImVec2{ 300.0f, 200.0f }, ImGuiCond_FirstUseEver);
+            ImGui::Begin("Stuffs");
+            if (ImGui::Button("Close", ImVec2(ImGui::GetWindowSize().x * 0.5f, 0.0f))) {
+                game->interactingObject = nullptr;
+            }
+            for (int i = 0; i < storage.size(); i++) {
+                if (ImGui::Button(storage[i].getItemName(true).c_str())) {
+                    game->addItem(storage[i]);
+                    storage.erase(storage.begin() + i, storage.begin() + i + 1);
+                    // Shoplifting steaks; how is that possible?
+                    if (chestId == 3 || chestId == 5) {
+                        game->steaks = 0;
+                    } else if (chestId == 12) {
+                        game->eggCount = 0;
+                    }
+                }
+                if (i % 3 < 2) {
+                    ImGui::SameLine();
+                }
+            }
+            ImGui::End();
             break;
-            
+        }
+
         default:
             game->interactingObject = nullptr;
             break;
     }
 }
+
+void Object::addItem(Item item) { 
+    for (int i = 0; i < storage.size(); i++) {
+        if (storage[i].type == item.type) {
+            storage[i].quantity += item.quantity;
+            if (storage[i].quantity <= 0) {
+                storage.erase(storage.begin() + i, storage.begin() + i + 1);
+            }
+            return;
+        }
+    }
+    if (item.quantity > 0) {
+        storage.push_back(item);
+    }
+}
+
+int Object::getQuantityOf(ItemType type) { 
+    for (int i = 0; i < storage.size(); i++) {
+        if (storage[i].type == type) {
+            return storage[i].quantity;
+        }
+    }
+    return 0;
+}
+
+void Object::syncItemCount(ItemType type, int count) {
+    for (int i = 0; i < storage.size(); i++) {
+        if (storage[i].type == type) {
+            storage.erase(storage.begin() + i, storage.begin() + i + 1);
+        }
+    }
+    addItem(Item(type, count));
+}
+
+
+
